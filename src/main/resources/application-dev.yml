@@ -1,0 +1,41 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/medi_connect_db
+    username: username
+    password: password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  mail:
+    host: localhost
+    port: 1080
+    username: ahmed
+    password: ahmed
+    properties:
+      mail:
+        smtp:
+          trust: "*"
+        auth: true
+        starttls:
+          enable: true
+        connectionTimeout: 5000
+        timeout: 3000
+        writetimeout: 5000
+
+application:
+  security:
+    jwt:
+      secretKey: 959e3c2753a7fdc42b28f699dea258e5fd09e65e7f93e2900e254a091033585f6d5fc95d
+      expiration: 86400000
+  mailing:
+    frontend:
+      activation-url: http://localhost:3000/activate-account
+server:
+  port: 8088
