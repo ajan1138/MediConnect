@@ -1,6 +1,7 @@
 package dev.ahmedajan.mediconnect.doctor;
 
 import dev.ahmedajan.mediconnect.appointment.Appointment;
+import dev.ahmedajan.mediconnect.availabilitySlot.AvailabilitySlot;
 import dev.ahmedajan.mediconnect.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,5 +33,8 @@ public class DoctorProfile {
 
     @OneToMany(mappedBy = "doctor")
     List<Appointment> medicalHistory;
+
+    @OneToMany(mappedBy = "doctor")
+    List<AvailabilitySlot> availableSlots;
 
 }

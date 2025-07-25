@@ -1,7 +1,12 @@
 package dev.ahmedajan.mediconnect.doctor;
 
+import dev.ahmedajan.mediconnect.admin.PageResponse;
+import dev.ahmedajan.mediconnect.availabilitySlot.AvailabilitySlotRepository;
 import dev.ahmedajan.mediconnect.doctor.dto.PublicDoctorDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,12 +16,28 @@ import java.util.List;
 public class DoctorService {
 
     private final DoctorRepository doctorRepository;
+    private final AvailabilitySlotRepository slotRepository;
 
-    public List<DoctorProfile> findAllDoctors(){
-        return doctorRepository.findAllDoctors();
+    public PageResponse<PublicDoctorDTO> findAllDoctors(int page, int size){
+        PageRequest pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+        Page<DoctorProfile> doctors = doctorRepository.findAllDisplayableDoctors(pageable);
+
+        List<PublicDoctorDTO> doctorResponse = doctors.stream()
+                .map(DoctorMapper::toDoctorDTO)
+                .toList();
+
+        return new PageResponse<>(
+                doctorResponse,
+                doctors.getNumber(),
+                doctors.getSize(),
+                (int) doctors.getTotalElements(),
+                doctors.getTotalPages(),
+                doctors.isFirst(),
+                doctors.isLast()
+        );
     }
 
-    public DoctorProfile findDoctorById(Long id) {
+    public PublicDoctorDTO findDoctorById(Long id) {
         DoctorProfile doctorProfile = doctorRepository.findById(id)
                 .orElseThrow( () -> new IllegalArgumentException("Invalid ID"));
 
@@ -29,4 +50,7 @@ public class DoctorService {
                 .averageRating(doctorProfile.getRate())
                 .build();
     }
+
+    // will update this to be per day
+
 }
