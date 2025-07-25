@@ -30,11 +30,12 @@ public class Appointment {
 
     private LocalDateTime appointmentTime;
 
-    // AppointmentStatus enum
+    @Enumerated(EnumType.STRING)
+    private AppointmentStatus status;
 
     private String notes;
 
-    //private Diagnosis diagnosis;
+    private String diagnosis;
 
 
 }

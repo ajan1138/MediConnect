@@ -28,6 +28,7 @@ public class DoctorProfile {
     private String bio;
     private String location;
     private boolean isApproved;
+    private double rate;
 
     @OneToMany(mappedBy = "doctor")
     List<Appointment> medicalHistory;
