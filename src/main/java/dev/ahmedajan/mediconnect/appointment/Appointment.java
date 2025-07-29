@@ -1,11 +1,10 @@
 package dev.ahmedajan.mediconnect.appointment;
 
+import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotTime;
 import dev.ahmedajan.mediconnect.doctor.DoctorProfile;
 import dev.ahmedajan.mediconnect.patient.PatientProfile;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -13,7 +12,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "appointments")
+@Table(uniqueConstraints = {
+        @UniqueConstraint(columnNames = "time_slot_id"),
+        @UniqueConstraint(columnNames = "doctor_id"),
+        @UniqueConstraint(columnNames = "patient_id")
+})
 public class Appointment {
 
     @Id
@@ -28,7 +31,9 @@ public class Appointment {
     @JoinColumn(name = "patient_id", referencedColumnName = "id")
     private PatientProfile patient;
 
-    private LocalDateTime appointmentTime;
+    @OneToOne
+    @JoinColumn(name = "reserved_slot_time", referencedColumnName = "id", unique = true)
+    private ReservedSlotTime timeSlot;
 
     @Enumerated(EnumType.STRING)
     private AppointmentStatus status;
@@ -36,6 +41,4 @@ public class Appointment {
     private String notes;
 
     private String diagnosis;
-
-
 }

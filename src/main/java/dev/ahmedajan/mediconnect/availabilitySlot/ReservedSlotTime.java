@@ -4,6 +4,7 @@ import dev.ahmedajan.mediconnect.doctor.DoctorProfile;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -12,8 +13,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "availability_slots")
-public class AvailabilitySlot {
+@Table(name = "reserved_slot_time")
+public class ReservedSlotTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,5 +30,7 @@ public class AvailabilitySlot {
     @Column(nullable = false)
     private LocalDateTime endTime;
 
-    private boolean isBooked;
+    @Column(nullable = false)
+    private LocalDate date;
+
 }

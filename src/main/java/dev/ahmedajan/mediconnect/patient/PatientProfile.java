@@ -5,7 +5,6 @@ import dev.ahmedajan.mediconnect.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -24,8 +23,6 @@ public class PatientProfile {
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id", unique = true)
     private User user;
-
-    private LocalDate birthDate;
 
     @OneToMany(mappedBy = "patient")
     List<Appointment> medicalHistory;

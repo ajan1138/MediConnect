@@ -1,8 +1,9 @@
 package dev.ahmedajan.mediconnect.doctor;
 
 import dev.ahmedajan.mediconnect.admin.PageResponse;
-import dev.ahmedajan.mediconnect.availabilitySlot.AvailabilitySlotRepository;
+import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotRepository;
 import dev.ahmedajan.mediconnect.doctor.dto.PublicDoctorDTO;
+import dev.ahmedajan.mediconnect.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,7 +17,8 @@ import java.util.List;
 public class DoctorService {
 
     private final DoctorRepository doctorRepository;
-    private final AvailabilitySlotRepository slotRepository;
+    private final ReservedSlotRepository slotRepository;
+    private final DoctorMapper doctorMapper;
 
     public PageResponse<PublicDoctorDTO> findAllDoctors(int page, int size){
         PageRequest pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
@@ -49,6 +51,12 @@ public class DoctorService {
                 .bio(doctorProfile.getBio())
                 .averageRating(doctorProfile.getRate())
                 .build();
+    }
+
+    public void createDoctorProfile(User savedUser, DoctorRegistrationRequest request) {
+        System.out.println(request);
+        DoctorProfile doctor = doctorMapper.toDoctorProfile(savedUser, request);
+        doctorRepository.save(doctor);
     }
 
     // will update this to be per day

@@ -1,9 +1,11 @@
 package dev.ahmedajan.mediconnect.auth;
 
 import dev.ahmedajan.mediconnect.doctor.DoctorRegistrationRequest;
+import dev.ahmedajan.mediconnect.doctor.DoctorService;
 import dev.ahmedajan.mediconnect.email.EmailService;
 import dev.ahmedajan.mediconnect.email.EmailTemplateName;
 import dev.ahmedajan.mediconnect.patient.PatientRegistrationRequest;
+import dev.ahmedajan.mediconnect.patient.PatientService;
 import dev.ahmedajan.mediconnect.role.Role;
 import dev.ahmedajan.mediconnect.security.JwtService;
 import dev.ahmedajan.mediconnect.status.AccountStatus;
@@ -12,6 +14,7 @@ import dev.ahmedajan.mediconnect.user.TokenRepository;
 import dev.ahmedajan.mediconnect.user.User;
 import dev.ahmedajan.mediconnect.user.UserRepository;
 import jakarta.mail.MessagingException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,6 +39,8 @@ public class AuthenticationService {
     private final EmailService emailService;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final PatientService patientService;
+    private final DoctorService doctorService;
 
     @Value("${application.mailing.frontend.activation-url}")
     private String activationUrl;
@@ -48,7 +53,7 @@ public class AuthenticationService {
         User savedUser = userRepository.save(user);
 
         // Store patient-specific information if needed
-        // patientService.createPatientProfile(savedUser, request);
+        patientService.createPatientProfile(savedUser);
 
         sendValidationEmail(savedUser, EmailTemplateName.PATIENT_ACTIVATE_ACCOUNT);
     }
@@ -67,6 +72,7 @@ public class AuthenticationService {
                 .build();
     }
 
+    @Transactional
     public void registerDoctor(DoctorRegistrationRequest request) throws MessagingException {
         validateEmailNotExists(request.getEmail());
 
@@ -75,7 +81,7 @@ public class AuthenticationService {
         User savedUser = userRepository.save(user);
 
         // Store doctor-specific information if needed
-        // doctorService.createDoctorProfile(savedUser, request);
+        doctorService.createDoctorProfile(savedUser, request);
 
         sendAdminNotificationEmail(savedUser);
     }
@@ -99,7 +105,6 @@ public class AuthenticationService {
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .dateOfBirth(request.getDateOfBirth())
                 .isAccountLocked(false)
                 .isEnabled(false)
                 .role(Role.DOCTOR)
@@ -209,7 +214,7 @@ public class AuthenticationService {
             );
         }
 
-        User user = findUserById(savedToken.getUser().getId());
+        User user = findUserById(Math.toIntExact(savedToken.getUser().getId()));
         activateUserAccount(user);
         markTokenAsValidated(savedToken);
     }

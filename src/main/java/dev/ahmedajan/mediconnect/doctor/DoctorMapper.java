@@ -1,16 +1,28 @@
 package dev.ahmedajan.mediconnect.doctor;
 
 import dev.ahmedajan.mediconnect.doctor.dto.PublicDoctorDTO;
+import dev.ahmedajan.mediconnect.user.User;
 import lombok.Builder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 
 @Service
 @Builder
 public class DoctorMapper {
 
-    public DoctorProfile toDoctorProfile(){
-
-        return null;
+    public DoctorProfile toDoctorProfile(User user, DoctorRegistrationRequest request){
+        return DoctorProfile.builder()
+                .user(user)
+                .specialization(request.getSpecialization())
+                .bio(request.getBio())
+                .location(request.getLocation())
+                .isApproved(true)
+                .rate(request.getRate())
+                .medicalHistory(new ArrayList<>())
+                .reservedSlots(new ArrayList<>())
+                .allRates(new ArrayList<>())
+                .build();
     }
 
 

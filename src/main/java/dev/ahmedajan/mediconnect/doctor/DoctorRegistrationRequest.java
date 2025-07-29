@@ -1,10 +1,11 @@
 package dev.ahmedajan.mediconnect.doctor;
 
 import dev.ahmedajan.mediconnect.auth.RegistrationRequest;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-
-import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -12,6 +13,9 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DoctorRegistrationRequest extends RegistrationRequest {
-    private LocalDate dateOfBirth;
-
+    private String specialization;
+    private String bio;
+    private String location;
+    //private boolean isApproved;
+    private double rate;
 }
