@@ -11,5 +11,5 @@ import java.time.LocalDate;
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
     boolean existsByDoctorAndTimeSlot(DoctorProfile doctor, ReservedSlotTime timeSlot);
 
-    boolean existsByPatient_IdAndReservedSlotTime_Date(Long patientId, LocalDate date);
+    boolean existsByPatient_IdAndTimeSlot_Date(Long patientId, LocalDate date);
 }

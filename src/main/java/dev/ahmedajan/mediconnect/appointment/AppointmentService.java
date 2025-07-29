@@ -44,10 +44,9 @@ public class AppointmentService {
         PatientProfile patient = patientRepository.findByUser_Id(user.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Patient not found"));
 
-        // fix
-//        if (appointmentRepository.existsByPatient_IdAndReservedSlotTime_Date(patient.getId(), reservedSlot.getDate())) {
-//            throw new IllegalStateException("Patient already has an appointment on this date");
-//        }
+        if (appointmentRepository.existsByPatient_IdAndTimeSlot_Date(patient.getId(), reservedSlot.getDate())) {
+            throw new IllegalStateException("Patient already has an appointment on this date");
+        }
 
         slotService.saveReservedSlot(doc, reservedSlot);
 
