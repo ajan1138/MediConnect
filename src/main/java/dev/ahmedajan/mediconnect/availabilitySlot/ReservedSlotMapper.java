@@ -13,6 +13,7 @@ public class ReservedSlotMapper {
                 .doctor(doc)
                 .startTime(request.getStartTime())
                 .endTime(request.getEndTime())
+                .date(request.getDate())
                 .build();
     }
 }

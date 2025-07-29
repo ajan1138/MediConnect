@@ -1,7 +1,7 @@
 package dev.ahmedajan.mediconnect.appointment.DTO;
 
 import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -20,8 +20,8 @@ public class AppointmentRequest {
     private LocalDateTime endTime;
     @Future
     private LocalDate date;
-    @Max(256)
+    @Size(max = 256)
     private String notes;
-    @Max(40)
+    @Size(max = 40)
     private String diagnosis;
 }
