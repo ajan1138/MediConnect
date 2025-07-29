@@ -100,8 +100,8 @@ public class PatientService {
     }
 
 
-    public long reserveAppointment(Long id, AppointmentRequest request) {
-        return appointmentService.reserveAppointment(id, request);
+    public long reserveAppointment(Long id, AppointmentRequest request, Authentication authentication) {
+        return appointmentService.reserveAppointment(id, request, authentication);
     }
 
     @Transactional

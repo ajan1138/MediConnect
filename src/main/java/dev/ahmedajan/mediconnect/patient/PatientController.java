@@ -73,9 +73,10 @@ public class PatientController {
     @PostMapping("/doctors/{doctor-id}/reserve")
     public long reserveAppointment(
             @PathVariable("doctor-id") Long id,
-            @RequestBody @Valid AppointmentRequest request
+            @RequestBody @Valid AppointmentRequest request,
+            Authentication authentication
             ) {
-        return patientService.reserveAppointment(id, request);
+        return patientService.reserveAppointment(id, request, authentication);
     }
 
 }

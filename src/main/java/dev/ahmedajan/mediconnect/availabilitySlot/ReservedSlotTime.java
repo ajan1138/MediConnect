@@ -1,5 +1,6 @@
 package dev.ahmedajan.mediconnect.availabilitySlot;
 
+import dev.ahmedajan.mediconnect.availabilitySlot.validation.ValidBusinessHours;
 import dev.ahmedajan.mediconnect.doctor.DoctorProfile;
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 @Entity
 @Table(name = "reserved_slot_time")
+@ValidBusinessHours
 public class ReservedSlotTime {
 
     @Id
@@ -33,4 +35,7 @@ public class ReservedSlotTime {
     @Column(nullable = false)
     private LocalDate date;
 
+    public Long getDoctorId() {
+        return doctor.getId();
+    }
 }

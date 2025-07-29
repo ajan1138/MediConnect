@@ -1,12 +1,20 @@
 package dev.ahmedajan.mediconnect.appointment;
 
 import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentRequest;
+import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotMapper;
+import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotRepository;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotService;
+import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotTime;
 import dev.ahmedajan.mediconnect.doctor.DoctorProfile;
 import dev.ahmedajan.mediconnect.doctor.DoctorRepository;
+import dev.ahmedajan.mediconnect.exception.SlotNotAvailableException;
+import dev.ahmedajan.mediconnect.patient.PatientProfile;
+import dev.ahmedajan.mediconnect.patient.PatientRepository;
+import dev.ahmedajan.mediconnect.user.User;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -15,13 +23,47 @@ public class AppointmentService {
 
     private final ReservedSlotService slotService;
     private final DoctorRepository doctorRepository;
+    private final AppointmentRepository appointmentRepository;
+    private final AppointmentMapper appointmentMapper;
+    private final PatientRepository patientRepository;
+    private final ReservedSlotMapper reservedSlotMapper;
+    private final ReservedSlotRepository reservedSlotRepository;
 
     @Transactional
-    public long reserveAppointment(Long id, AppointmentRequest request) {
-
+    public long reserveAppointment(Long id, AppointmentRequest request, Authentication authentication) {
         DoctorProfile doc = doctorRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Couldn't find the doctor with that id!"));
-        slotService.saveReservedSlot(doc, request);
-        return doc.getId();
+
+        ReservedSlotTime reservedSlot = reservedSlotMapper.toReserveSlotTime(doc, request);
+
+        if (ifReservedSlotOverlaps(reservedSlot)) {
+            throw new SlotNotAvailableException("Time slot already booked");
+        }
+
+        User user = (User) authentication.getPrincipal();
+        PatientProfile patient = patientRepository.findByUser_Id(user.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Patient not found"));
+
+        // fix
+//        if (appointmentRepository.existsByPatient_IdAndReservedSlotTime_Date(patient.getId(), reservedSlot.getDate())) {
+//            throw new IllegalStateException("Patient already has an appointment on this date");
+//        }
+
+        slotService.saveReservedSlot(doc, reservedSlot);
+
+        Appointment appointment = appointmentMapper.toAppointment(request, doc, patient, reservedSlot);
+
+        appointmentRepository.save(appointment);
+
+        return appointment.getId();
+    }
+
+    private boolean ifReservedSlotOverlaps(ReservedSlotTime slot) {
+        return reservedSlotRepository.existsOverlappingSlot(
+                slot.getDoctorId(),
+                slot.getDate(),
+                slot.getStartTime(),
+                slot.getEndTime()
+        );
     }
 }

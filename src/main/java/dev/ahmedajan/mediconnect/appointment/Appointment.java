@@ -14,8 +14,6 @@ import lombok.*;
 @Entity
 @Table(uniqueConstraints = {
         @UniqueConstraint(columnNames = "time_slot_id"),
-        @UniqueConstraint(columnNames = "doctor_id"),
-        @UniqueConstraint(columnNames = "patient_id")
 })
 public class Appointment {
 
