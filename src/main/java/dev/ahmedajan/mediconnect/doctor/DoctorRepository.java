@@ -12,4 +12,6 @@ public interface DoctorRepository extends JpaRepository<DoctorProfile, Long> {
             FROM DoctorProfile d
             """)
     Page<DoctorProfile> findAllDisplayableDoctors(Pageable pageable);
+
+    DoctorProfile getDoctorProfileById(long id);
 }

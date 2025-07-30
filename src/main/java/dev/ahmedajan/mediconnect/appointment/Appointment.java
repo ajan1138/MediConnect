@@ -31,7 +31,7 @@ public class Appointment {
     @JoinColumn(name = "patient_id", referencedColumnName = "id")
     private PatientProfile patient;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "reserved_slot_time", referencedColumnName = "id", unique = true)
     private ReservedSlotTime timeSlot;
 

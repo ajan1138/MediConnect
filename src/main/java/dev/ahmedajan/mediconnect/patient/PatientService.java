@@ -112,4 +112,11 @@ public class PatientService {
 
         appointmentService.deleteAppointment(patient, id);
     }
+
+    public AppointmentResponseDTO updateAppointment(Authentication authentication, Long id, AppointmentRequest request) {
+        User user = (User) authentication.getPrincipal();
+        PatientProfile patient = patientLookupService.getPatientByUser(user);
+
+        return appointmentService.updateAppointment(patient, id, request);
+    }
 }

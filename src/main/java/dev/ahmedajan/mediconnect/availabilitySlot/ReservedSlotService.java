@@ -20,7 +20,7 @@ public class ReservedSlotService {
         return slotRepository.findAllNonBooked(id);
     }
 
-    public void saveReservedSlot(DoctorProfile doc, ReservedSlotTime reservedSlot) {
+    public ReservedSlotTime saveReservedSlot(DoctorProfile doc, ReservedSlotTime reservedSlot) {
 
         LocalDateTime start = reservedSlot.getStartTime();
         LocalDateTime end = reservedSlot.getEndTime();
@@ -37,6 +37,10 @@ public class ReservedSlotService {
             }
         }
 
-        slotRepository.save(reservedSlot);
+        return slotRepository.save(reservedSlot);
+    }
+
+    public void deleteReservedSlot(ReservedSlotTime oldSlot) {
+        slotRepository.delete(oldSlot);
     }
 }

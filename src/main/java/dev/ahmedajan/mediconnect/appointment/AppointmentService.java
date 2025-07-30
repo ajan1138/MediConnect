@@ -13,7 +13,6 @@ import dev.ahmedajan.mediconnect.exception.BusinessRuleException;
 import dev.ahmedajan.mediconnect.exception.SlotNotAvailableException;
 import dev.ahmedajan.mediconnect.patient.PatientLookupService;
 import dev.ahmedajan.mediconnect.patient.PatientProfile;
-import dev.ahmedajan.mediconnect.patient.PatientRepository;
 import dev.ahmedajan.mediconnect.user.User;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -23,7 +22,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
@@ -33,7 +34,6 @@ public class AppointmentService {
     private final DoctorRepository doctorRepository;
     private final AppointmentRepository appointmentRepository;
     private final AppointmentMapper appointmentMapper;
-    private final PatientRepository patientRepository;
     private final ReservedSlotMapper reservedSlotMapper;
     private final ReservedSlotRepository reservedSlotRepository;
     private final PatientLookupService patientLookupService;
@@ -97,7 +97,8 @@ public class AppointmentService {
     }
 
     public AppointmentResponseDTO getUserAppointment(PatientProfile patientProfile, Long id) {
-        Appointment appointment = appointmentRepository.getAppointmentById(id);
+        Appointment appointment = appointmentRepository.getAppointmentById(id)
+                .orElseThrow( () -> new IllegalArgumentException("No appointment found!"));
 
         if (appointment.getPatient().getId() != patientProfile.getId()) {
             throw new BusinessRuleException("Cannot visit the appointment of another patient!");
@@ -107,12 +108,81 @@ public class AppointmentService {
     }
 
     public void deleteAppointment(PatientProfile patient, Long id) {
-        Appointment appointment = appointmentRepository.getAppointmentById(id);
+        Appointment appointment = appointmentRepository.getAppointmentById(id).get();
 
         if (appointment.getPatient().getId() != patient.getId()) {
-            throw new BusinessRuleException("Cannot visit the appointment of another patient!");
+            throw new BusinessRuleException("Cannot delete the appointment of another patient!");
         }
 
-        return appointmentRepository.delete(appointment);
+        appointmentRepository.delete(appointment);
     }
+
+    @Transactional
+    public AppointmentResponseDTO updateAppointment(PatientProfile patient, Long id, AppointmentRequest request) {
+
+        Appointment appointment = appointmentRepository.getAppointmentById(id).orElseThrow(
+                () -> new IllegalArgumentException("Appointment ID not valid!")
+        );
+
+        if (patient.getId() != appointment.getPatient().getId()) {
+            throw new BusinessRuleException("Cannot update appointment of another user!");
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        if (appointment.getTimeSlot().getStartTime().isBefore(now.plusHours(24))) {
+            throw new IllegalStateException("Cannot update appointments less than 24 hours before the scheduled time");
+        }
+
+        DoctorProfile doc = doctorRepository.getDoctorProfileById(appointment.getDoctor().getId());
+        ReservedSlotTime newReservedSlot = reservedSlotMapper.toReserveSlotTime(doc, request);
+
+        if (ifReservedSlotOverlaps(newReservedSlot)) {
+            throw new SlotNotAvailableException("Time slot already booked");
+        }
+
+        if (!appointment.getTimeSlot().getDate().equals(newReservedSlot.getDate()) &&
+                appointmentRepository.existsByPatient_IdAndTimeSlot_DateAndIdNot(
+                        patient.getId(),
+                        newReservedSlot.getDate(),
+                        id)) {
+            throw new IllegalStateException("Patient already has an appointment on this date");
+        }
+
+        ReservedSlotTime oldSlot = appointment.getTimeSlot();
+        if (!slotsAreEqual(oldSlot, newReservedSlot)) {
+            // Save new slot first to get the persisted entity
+            ReservedSlotTime savedNewSlot = slotService.saveReservedSlot(doc, newReservedSlot);
+
+            // Update appointment with the persisted slot
+            appointment.setTimeSlot(savedNewSlot);
+
+            // Remove old slot after successful update
+            slotService.deleteReservedSlot(oldSlot);
+        }
+
+
+        if (request.getNotes() != null) {
+            appointment.setNotes(request.getNotes());
+        }
+        if (request.getDiagnosis() != null) {
+            appointment.setDiagnosis(request.getDiagnosis());
+        }
+
+        Appointment updatedAppointment = appointmentRepository.save(appointment);
+        return appointmentMapper.toAppointmentResponseDTO(updatedAppointment);
+    }
+
+    private boolean slotsAreEqual(ReservedSlotTime slot1, ReservedSlotTime slot2) {
+        if (slot1 == null && slot2 == null) {
+            return true;
+        }
+        if (slot1 == null || slot2 == null) {
+            return false;
+        }
+
+        return Objects.equals(slot1.getDate(), slot2.getDate()) &&
+                Objects.equals(slot1.getStartTime(), slot2.getStartTime()) &&
+                Objects.equals(slot1.getEndTime(), slot2.getEndTime());
+    }
+
 }

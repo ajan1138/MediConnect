@@ -30,7 +30,7 @@ public class PatientController {
     ) {
         return ResponseEntity.ok(patientService.findAllDoctors(page, size));
     }
-    patientService
+
     @GetMapping("/doctors/{doctor-id}")
     public ResponseEntity<PublicDoctorDTO> getDoctor(
             @PathVariable("doctor-id") Long id
@@ -95,10 +95,17 @@ public class PatientController {
     }
 
     @DeleteMapping("/appointments/{appointment-id}")
-    public ResponseEntity<AppointmentResponseDTO> deleteAppointments(Authentication authentication,
+    public ResponseEntity<AppointmentResponseDTO> deleteAppointment(Authentication authentication,
                                                                      @PathVariable("appointment-id") Long id){
         patientService.deleteAppointment(authentication, id);
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/appointments/{appointment-id}")
+    public ResponseEntity<AppointmentResponseDTO> updateAppointment(
+            Authentication authentication,
+            @PathVariable("appointment-id") Long id,
+            @RequestBody AppointmentRequest request){
+        return ResponseEntity.ok(patientService.updateAppointment(authentication, id, request));
+    }
 }

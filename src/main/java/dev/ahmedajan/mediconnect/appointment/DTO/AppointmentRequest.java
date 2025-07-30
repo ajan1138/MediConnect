@@ -1,9 +1,9 @@
 package dev.ahmedajan.mediconnect.appointment.DTO;
 
+import dev.ahmedajan.mediconnect.availabilitySlot.validation.ValidBusinessHours;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ValidBusinessHours
 public class AppointmentRequest {
 
     @Future

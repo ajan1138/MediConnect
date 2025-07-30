@@ -25,4 +25,5 @@ public interface ReservedSlotRepository extends JpaRepository<ReservedSlotTime, 
                                   @Param("date") LocalDate date,
                                   @Param("startTime") LocalDateTime startTime,
                                   @Param("endTime") LocalDateTime endTime);
+
 }
