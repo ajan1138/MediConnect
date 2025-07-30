@@ -49,8 +49,7 @@ public class AppointmentService {
         }
 
         User user = (User) authentication.getPrincipal();
-        PatientProfile patient = patientRepository.findByUser_Id(user.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Patient not found"));
+        PatientProfile patient = patientLookupService.getPatientByUser(user);
 
         if (appointmentRepository.existsByPatient_IdAndTimeSlot_Date(patient.getId(), reservedSlot.getDate())) {
             throw new IllegalStateException("Patient already has an appointment on this date");

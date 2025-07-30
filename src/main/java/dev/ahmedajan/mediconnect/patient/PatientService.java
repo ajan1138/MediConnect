@@ -13,7 +13,6 @@ import dev.ahmedajan.mediconnect.patient.DTO.PatientResponseDTO;
 import dev.ahmedajan.mediconnect.user.TokenRepository;
 import dev.ahmedajan.mediconnect.user.User;
 import dev.ahmedajan.mediconnect.user.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +32,7 @@ public class PatientService {
     private final UserRepository userRepository;
     private final AppointmentService appointmentService;
     private final TokenRepository tokenRepository;
+    private final PatientLookupService patientLookupService;
 
     public PageResponse<PublicDoctorDTO> findAllDoctors(int page, int size){
         return doctorService.findAllDoctors(page, size);
@@ -49,24 +49,14 @@ public class PatientService {
     //@PreAuthorize("hasAuthority('PATIENT_GET')")
     public PatientResponseDTO getPatientSettings(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        Long id = user.getId();
-        System.out.println(id);
-
-        PatientProfile patient = patientRepository.findByUser_Id(id)
-                .orElseThrow(() ->
-                        new EntityNotFoundException
-                                ("Could not find a patient with same id!!"));
+        PatientProfile patient = patientLookupService.getPatientByUser(user);
         return patientMapper.toPatientResponseDTO(patient);
     }
 
     public Long putPatientSettings(Authentication authentication, @Valid PatientRequestDTO patientRequestDTO) {
         User user = (User) authentication.getPrincipal();
-        Long id = user.getId();
 
-        PatientProfile patient = patientRepository.findByUser_Id(id)
-                .orElseThrow(() ->
-                        new EntityNotFoundException
-                                ("Could not find a patient with same id, you hacked US!"));
+        PatientProfile patient = patientLookupService.getPatientByUser(user);
 
         user.setFirstName(patientRequestDTO.getFirstName());
         user.setLastName(patientRequestDTO.getLastName());
@@ -87,7 +77,7 @@ public class PatientService {
     @Transactional
     public void deletePatient(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        PatientProfile patient = getPatientByUser(user);
+        PatientProfile patient = patientLookupService.getPatientByUser(user);
 
         tokenRepository.deleteAllByUser_Id(user.getId());
         patientRepository.delete(patient);
@@ -107,12 +97,5 @@ public class PatientService {
 
     public PageResponse<AppointmentResponseDTO> getUserReservations(Authentication authentication, int page, int size) {
         return appointmentService.getUserReservations(authentication, page, size);
-    }
-
-    public PatientProfile getPatientByUser(User user) {
-        return patientRepository.findByUser_Id(user.getId())
-                .orElseThrow(() ->
-                        new EntityNotFoundException
-                                ("Could not find a patient with same id!"));
     }
 }
