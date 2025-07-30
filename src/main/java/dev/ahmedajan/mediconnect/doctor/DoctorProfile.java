@@ -64,4 +64,8 @@ public class DoctorProfile {
     @OneToMany(mappedBy = "doctor")
     List<Rate> allRates;
 
+    public String getFullName(){
+        return user.getFullName();
+    }
+
 }

@@ -3,6 +3,7 @@ package dev.ahmedajan.mediconnect.patient;
 import dev.ahmedajan.mediconnect.admin.PageResponse;
 import dev.ahmedajan.mediconnect.appointment.AppointmentService;
 import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentRequest;
+import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentResponseDTO;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotService;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotTime;
 import dev.ahmedajan.mediconnect.doctor.DoctorService;
@@ -16,6 +17,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -108,5 +110,9 @@ public class PatientService {
     public void createPatientProfile(User savedUser) {
         PatientProfile patient = patientMapper.toPatientProfile(savedUser);
         patientRepository.save(patient);
+    }
+
+    public PageResponse<AppointmentResponseDTO> getUserReservations(Authentication authentication, int page, int size) {
+        return appointmentService.getUserReservations(authentication, page, size);
     }
 }

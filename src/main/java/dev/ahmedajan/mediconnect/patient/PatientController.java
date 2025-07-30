@@ -2,6 +2,7 @@ package dev.ahmedajan.mediconnect.patient;
 
 import dev.ahmedajan.mediconnect.admin.PageResponse;
 import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentRequest;
+import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentResponseDTO;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotTime;
 import dev.ahmedajan.mediconnect.doctor.dto.PublicDoctorDTO;
 import dev.ahmedajan.mediconnect.patient.DTO.PatientRequestDTO;
@@ -77,6 +78,14 @@ public class PatientController {
             Authentication authentication
             ) {
         return patientService.reserveAppointment(id, request, authentication);
+    }
+
+    @GetMapping("/reservations")
+    public ResponseEntity<PageResponse<AppointmentResponseDTO>> getUserReservations(
+            Authentication authentication,
+            @RequestParam(name = "page", defaultValue = "1", required = false) int page,
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size){
+        return ResponseEntity.ok(patientService.getUserReservations(authentication, page, size));
     }
 
 }

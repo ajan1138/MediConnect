@@ -26,4 +26,8 @@ public class PatientProfile {
 
     @OneToMany(mappedBy = "patient")
     List<Appointment> medicalHistory;
+
+    public String getFullName(){
+        return user.getFullName();
+    }
 }

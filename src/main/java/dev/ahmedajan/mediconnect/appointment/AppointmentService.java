@@ -1,6 +1,8 @@
 package dev.ahmedajan.mediconnect.appointment;
 
+import dev.ahmedajan.mediconnect.admin.PageResponse;
 import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentRequest;
+import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentResponseDTO;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotMapper;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotRepository;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotService;
@@ -14,8 +16,12 @@ import dev.ahmedajan.mediconnect.user.User;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -64,5 +70,24 @@ public class AppointmentService {
                 slot.getStartTime(),
                 slot.getEndTime()
         );
+    }
+
+    public PageResponse<AppointmentResponseDTO> getUserReservations(Authentication authentication, int page, int size) {
+
+        PageRequest pageable = PageRequest.of(page, size);
+        Page<Appointment> appointments = appointmentRepository.findAllDisplayableAppointments(pageable);
+
+        List<AppointmentResponseDTO> appointmentResponseDTOS = appointments.stream()
+                .map(appointmentMapper::toAppointmentResponseDTO)
+                .toList();
+
+        return new PageResponse<>(appointmentResponseDTOS,
+                appointments.getNumber(),
+                appointments.getSize(),
+                (int) appointments.getTotalElements(),
+                appointments.getTotalPages(),
+                appointments.isFirst(),
+                appointments.isLast()
+                );
     }
 }

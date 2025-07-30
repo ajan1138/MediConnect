@@ -6,6 +6,8 @@ import dev.ahmedajan.mediconnect.patient.PatientProfile;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -39,4 +41,8 @@ public class Appointment {
     private String notes;
 
     private String diagnosis;
+
+    public LocalDate getDate() {
+        return timeSlot.getDate();
+    }
 }
