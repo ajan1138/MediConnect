@@ -10,6 +10,7 @@ import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotTime;
 import dev.ahmedajan.mediconnect.doctor.DoctorProfile;
 import dev.ahmedajan.mediconnect.doctor.DoctorRepository;
 import dev.ahmedajan.mediconnect.exception.SlotNotAvailableException;
+import dev.ahmedajan.mediconnect.patient.PatientLookupService;
 import dev.ahmedajan.mediconnect.patient.PatientProfile;
 import dev.ahmedajan.mediconnect.patient.PatientRepository;
 import dev.ahmedajan.mediconnect.user.User;
@@ -34,6 +35,7 @@ public class AppointmentService {
     private final PatientRepository patientRepository;
     private final ReservedSlotMapper reservedSlotMapper;
     private final ReservedSlotRepository reservedSlotRepository;
+    private final PatientLookupService patientLookupService;
 
     @Transactional
     public long reserveAppointment(Long id, AppointmentRequest request, Authentication authentication) {
@@ -74,8 +76,11 @@ public class AppointmentService {
 
     public PageResponse<AppointmentResponseDTO> getUserReservations(Authentication authentication, int page, int size) {
 
+        User user = (User) authentication.getPrincipal();
+        PatientProfile patient = patientLookupService.getPatientByUser(user);
+
         PageRequest pageable = PageRequest.of(page, size);
-        Page<Appointment> appointments = appointmentRepository.findAllDisplayableAppointments(pageable);
+        Page<Appointment> appointments = appointmentRepository.findAllByPatientId(patient.getId(), pageable);
 
         List<AppointmentResponseDTO> appointmentResponseDTOS = appointments.stream()
                 .map(appointmentMapper::toAppointmentResponseDTO)

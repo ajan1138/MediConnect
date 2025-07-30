@@ -17,9 +17,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,7 +30,6 @@ public class PatientService {
     private final ReservedSlotService slotService;
     private final PatientRepository patientRepository;
     private final PatientMapper patientMapper;
-    private final PasswordEncoder encoder;
     private final UserRepository userRepository;
     private final AppointmentService appointmentService;
     private final TokenRepository tokenRepository;
@@ -90,13 +87,9 @@ public class PatientService {
     @Transactional
     public void deletePatient(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        Long id = user.getId();
+        PatientProfile patient = getPatientByUser(user);
 
-        PatientProfile patient = patientRepository.findByUser_Id(id)
-                .orElseThrow(() ->
-                        new EntityNotFoundException
-                                ("Could not find a patient with same id!"));
-        tokenRepository.deleteAllByUser_Id(id);
+        tokenRepository.deleteAllByUser_Id(user.getId());
         patientRepository.delete(patient);
         userRepository.delete(user);
     }
@@ -114,5 +107,12 @@ public class PatientService {
 
     public PageResponse<AppointmentResponseDTO> getUserReservations(Authentication authentication, int page, int size) {
         return appointmentService.getUserReservations(authentication, page, size);
+    }
+
+    public PatientProfile getPatientByUser(User user) {
+        return patientRepository.findByUser_Id(user.getId())
+                .orElseThrow(() ->
+                        new EntityNotFoundException
+                                ("Could not find a patient with same id!"));
     }
 }
