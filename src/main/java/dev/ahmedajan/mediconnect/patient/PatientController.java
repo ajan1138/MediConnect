@@ -30,7 +30,7 @@ public class PatientController {
     ) {
         return ResponseEntity.ok(patientService.findAllDoctors(page, size));
     }
-
+    patientService
     @GetMapping("/doctors/{doctor-id}")
     public ResponseEntity<PublicDoctorDTO> getDoctor(
             @PathVariable("doctor-id") Long id
@@ -80,12 +80,25 @@ public class PatientController {
         return patientService.reserveAppointment(id, request, authentication);
     }
 
-    @GetMapping("/reservations")
-    public ResponseEntity<PageResponse<AppointmentResponseDTO>> getUserReservations(
+    @GetMapping("/appointments")
+    public ResponseEntity<PageResponse<AppointmentResponseDTO>> getUserAppointments(
             Authentication authentication,
             @RequestParam(name = "page", defaultValue = "1", required = false) int page,
             @RequestParam(name = "size", defaultValue = "10", required = false) int size){
-        return ResponseEntity.ok(patientService.getUserReservations(authentication, page, size));
+        return ResponseEntity.ok(patientService.getUserAppointments(authentication, page, size));
+    }
+
+    @GetMapping("/appointments/{appointment-id}")
+    public ResponseEntity<AppointmentResponseDTO> getUserAppointments(Authentication authentication,
+                                                                     @PathVariable("appointment-id") Long id){
+        return ResponseEntity.ok(patientService.getUserAppointment(authentication, id));
+    }
+
+    @DeleteMapping("/appointments/{appointment-id}")
+    public ResponseEntity<AppointmentResponseDTO> deleteAppointments(Authentication authentication,
+                                                                     @PathVariable("appointment-id") Long id){
+        patientService.deleteAppointment(authentication, id);
+        return ResponseEntity.noContent().build();
     }
 
 }

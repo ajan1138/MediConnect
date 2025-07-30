@@ -9,6 +9,7 @@ import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotService;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotTime;
 import dev.ahmedajan.mediconnect.doctor.DoctorProfile;
 import dev.ahmedajan.mediconnect.doctor.DoctorRepository;
+import dev.ahmedajan.mediconnect.exception.BusinessRuleException;
 import dev.ahmedajan.mediconnect.exception.SlotNotAvailableException;
 import dev.ahmedajan.mediconnect.patient.PatientLookupService;
 import dev.ahmedajan.mediconnect.patient.PatientProfile;
@@ -73,7 +74,7 @@ public class AppointmentService {
         );
     }
 
-    public PageResponse<AppointmentResponseDTO> getUserReservations(Authentication authentication, int page, int size) {
+    public PageResponse<AppointmentResponseDTO> getUserAppointments(Authentication authentication, int page, int size) {
 
         User user = (User) authentication.getPrincipal();
         PatientProfile patient = patientLookupService.getPatientByUser(user);
@@ -93,5 +94,25 @@ public class AppointmentService {
                 appointments.isFirst(),
                 appointments.isLast()
                 );
+    }
+
+    public AppointmentResponseDTO getUserAppointment(PatientProfile patientProfile, Long id) {
+        Appointment appointment = appointmentRepository.getAppointmentById(id);
+
+        if (appointment.getPatient().getId() != patientProfile.getId()) {
+            throw new BusinessRuleException("Cannot visit the appointment of another patient!");
+        }
+
+        return appointmentMapper.toAppointmentResponseDTO(appointment);
+    }
+
+    public void deleteAppointment(PatientProfile patient, Long id) {
+        Appointment appointment = appointmentRepository.getAppointmentById(id);
+
+        if (appointment.getPatient().getId() != patient.getId()) {
+            throw new BusinessRuleException("Cannot visit the appointment of another patient!");
+        }
+
+        return appointmentRepository.delete(appointment);
     }
 }

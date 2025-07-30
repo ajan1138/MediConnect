@@ -95,7 +95,21 @@ public class PatientService {
         patientRepository.save(patient);
     }
 
-    public PageResponse<AppointmentResponseDTO> getUserReservations(Authentication authentication, int page, int size) {
-        return appointmentService.getUserReservations(authentication, page, size);
+    public PageResponse<AppointmentResponseDTO> getUserAppointments(Authentication authentication, int page, int size) {
+        return appointmentService.getUserAppointments(authentication, page, size);
+    }
+
+    public AppointmentResponseDTO getUserAppointment(Authentication authentication, Long id) {
+        User user = (User) authentication.getPrincipal();
+        PatientProfile patient = patientLookupService.getPatientByUser(user);
+
+        return appointmentService.getUserAppointment(patient, id);
+    }
+
+    public void deleteAppointment(Authentication authentication, Long id) {
+        User user = (User) authentication.getPrincipal();
+        PatientProfile patient = patientLookupService.getPatientByUser(user);
+
+        appointmentService.deleteAppointment(patient, id);
     }
 }
