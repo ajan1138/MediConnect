@@ -7,6 +7,7 @@ import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotTime;
 import dev.ahmedajan.mediconnect.doctor.dto.PublicDoctorDTO;
 import dev.ahmedajan.mediconnect.patient.DTO.PatientRequestDTO;
 import dev.ahmedajan.mediconnect.patient.DTO.PatientResponseDTO;
+import dev.ahmedajan.mediconnect.rate.DTO.RateRequestDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -107,5 +108,19 @@ public class PatientController {
             @PathVariable("appointment-id") Long id,
             @RequestBody AppointmentRequest request){
         return ResponseEntity.ok(patientService.updateAppointment(authentication, id, request));
+    }
+
+    @PostMapping("/doctors/{doctor-id}/rate")
+    public ResponseEntity<Long> rateDoctor(Authentication authentication,
+                                              @Valid @RequestBody RateRequestDTO requestDTO,
+                                              @PathVariable("doctor-id") Long id){
+        return ResponseEntity.ok(patientService.rateDoctor(authentication, requestDTO, id));
+    }
+
+    @PutMapping("/doctors/{doctor-id}/rate")
+    public ResponseEntity<Long> updateRateDoctor(Authentication authentication,
+                                           @Valid @RequestBody RateRequestDTO requestDTO,
+                                           @PathVariable("doctor-id") Long id){
+        return ResponseEntity.ok(patientService.updateRateDoctor(authentication, requestDTO, id));
     }
 }

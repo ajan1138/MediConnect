@@ -10,6 +10,8 @@ import dev.ahmedajan.mediconnect.doctor.DoctorService;
 import dev.ahmedajan.mediconnect.doctor.dto.PublicDoctorDTO;
 import dev.ahmedajan.mediconnect.patient.DTO.PatientRequestDTO;
 import dev.ahmedajan.mediconnect.patient.DTO.PatientResponseDTO;
+import dev.ahmedajan.mediconnect.rate.DTO.RateRequestDTO;
+import dev.ahmedajan.mediconnect.rate.RateService;
 import dev.ahmedajan.mediconnect.user.TokenRepository;
 import dev.ahmedajan.mediconnect.user.User;
 import dev.ahmedajan.mediconnect.user.UserRepository;
@@ -33,6 +35,7 @@ public class PatientService {
     private final AppointmentService appointmentService;
     private final TokenRepository tokenRepository;
     private final PatientLookupService patientLookupService;
+    private final RateService rateService;
 
     public PageResponse<PublicDoctorDTO> findAllDoctors(int page, int size){
         return doctorService.findAllDoctors(page, size);
@@ -119,4 +122,17 @@ public class PatientService {
 
         return appointmentService.updateAppointment(patient, id, request);
     }
+
+    public Long rateDoctor(Authentication authentication, @Valid RateRequestDTO requestDTO, Long id) {
+        User user = (User) authentication.getPrincipal();
+        PatientProfile patient = patientLookupService.getPatientByUser(user);
+        return rateService.rateDoctor(patient, requestDTO, id);
+    }
+
+    public Long updateRateDoctor(Authentication authentication, @Valid RateRequestDTO requestDTO, Long id) {
+        User user = (User) authentication.getPrincipal();
+        PatientProfile patient = patientLookupService.getPatientByUser(user);
+        return rateService.updateRateDoctor(patient, requestDTO, id);
+    }
+
 }

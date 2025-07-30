@@ -1,11 +1,9 @@
 package dev.ahmedajan.mediconnect.rate;
 
 import dev.ahmedajan.mediconnect.doctor.DoctorProfile;
+import dev.ahmedajan.mediconnect.patient.PatientProfile;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "rates")
@@ -13,6 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Rate {
 
     @Id
@@ -24,4 +23,8 @@ public class Rate {
     @ManyToOne
     @JoinColumn(name = "doctor_id", referencedColumnName = "id")
     private DoctorProfile doctor;
+
+    @ManyToOne
+    @JoinColumn(name = "patient_id", referencedColumnName = "id")
+    private PatientProfile patient;
 }
