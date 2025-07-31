@@ -22,5 +22,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     boolean existsByPatient_IdAndTimeSlot_DateAndIdNot(Long patientId, LocalDate date, Long appointmentId);
 
     Page<Appointment> getAppointmentByDoctor(Pageable pageable, DoctorProfile doctor);
+
+    Appointment findByDoctor(DoctorProfile doctor);
 }
 

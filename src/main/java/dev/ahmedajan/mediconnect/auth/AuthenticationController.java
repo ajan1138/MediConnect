@@ -1,6 +1,7 @@
 package dev.ahmedajan.mediconnect.auth;
 
 import dev.ahmedajan.mediconnect.doctor.DoctorRegistrationRequest;
+import dev.ahmedajan.mediconnect.doctor.DoctorService;
 import dev.ahmedajan.mediconnect.patient.PatientRegistrationRequest;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthenticationController {
 
     private final AuthenticationService service;
+    private final DoctorService doctorService;
 
     @PostMapping("/register/patient")
     @ResponseStatus(HttpStatus.ACCEPTED)

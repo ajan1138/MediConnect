@@ -3,6 +3,7 @@ package dev.ahmedajan.mediconnect.appointment;
 import dev.ahmedajan.mediconnect.admin.PageResponse;
 import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentRequest;
 import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentResponseDTO;
+import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentStatusPatchRequest;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotMapper;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotRepository;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotService;
@@ -183,6 +184,28 @@ public class AppointmentService {
         return Objects.equals(slot1.getDate(), slot2.getDate()) &&
                 Objects.equals(slot1.getStartTime(), slot2.getStartTime()) &&
                 Objects.equals(slot1.getEndTime(), slot2.getEndTime());
+    }
+
+    public AppointmentResponseDTO updateStatus(
+            DoctorProfile doctor,
+            AppointmentStatusPatchRequest request,
+            Long appointmentId) {
+
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new IllegalArgumentException("No such appointment with that id!: "
+                        + appointmentId));
+
+        if (doctor.getId() != appointment.getDoctor().getId()) {
+            throw new BusinessRuleException("You can only change your appointments!");
+        }
+
+        AppointmentStatus newStatus = AppointmentStatus.fromMessage(request.getStatus());
+
+        appointment.setStatus(newStatus);
+
+        appointmentRepository.save(appointment);
+
+        return appointmentMapper.toAppointmentResponseDTO(appointment);
     }
 
 }

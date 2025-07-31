@@ -2,6 +2,7 @@ package dev.ahmedajan.mediconnect.doctor;
 
 import dev.ahmedajan.mediconnect.admin.PageResponse;
 import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentResponseDTO;
+import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentStatusPatchRequest;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorRequestDTO;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorResponseDTO;
 import jakarta.validation.Valid;
@@ -39,5 +40,14 @@ public class DoctorController {
             @RequestParam(name = "size", defaultValue = "10", required = false) int size
     ){
         return ResponseEntity.ok(doctorService.getAppointments(authentication, page, size));
+    }
+
+    @PatchMapping("/appointments/{appointment-id}/accept")
+    public ResponseEntity<AppointmentResponseDTO> patchAppointmentStatus(
+            Authentication authentication,
+            @PathVariable("appointment-id") Long appointmentId,
+            @RequestBody AppointmentStatusPatchRequest request) {
+
+        return ResponseEntity.ok(doctorService.updateStatus(authentication, request, appointmentId));
     }
 }

@@ -4,7 +4,9 @@ import dev.ahmedajan.mediconnect.admin.PageResponse;
 import dev.ahmedajan.mediconnect.appointment.Appointment;
 import dev.ahmedajan.mediconnect.appointment.AppointmentMapper;
 import dev.ahmedajan.mediconnect.appointment.AppointmentRepository;
+import dev.ahmedajan.mediconnect.appointment.AppointmentService;
 import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentResponseDTO;
+import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentStatusPatchRequest;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorRequestDTO;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorResponseDTO;
 import dev.ahmedajan.mediconnect.exception.BusinessRuleException;
@@ -26,6 +28,7 @@ public class DoctorService {
     private final DoctorMapper doctorMapper;
     private final AppointmentRepository appointmentRepository;
     private final AppointmentMapper appointmentMapper;
+    private final AppointmentService appointmentService;
 
     public PageResponse<DoctorResponseDTO> findAllDoctors(int page, int size){
         PageRequest pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
@@ -120,5 +123,13 @@ public class DoctorService {
                 appointments.isFirst(),
                 appointments.isLast()
         );
+    }
+
+    public AppointmentResponseDTO updateStatus(Authentication authentication, AppointmentStatusPatchRequest request, Long appointmentId) {
+        User user = (User) authentication.getPrincipal();
+        DoctorProfile doctor = doctorRepository.getDoctorByUser(user)
+                .orElseThrow(() -> new BusinessRuleException("You have to be user to be able for this action!"));
+
+        return appointmentService.updateStatus(doctor, request ,appointmentId);
     }
 }
