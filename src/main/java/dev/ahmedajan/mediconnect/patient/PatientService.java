@@ -135,4 +135,9 @@ public class PatientService {
         return rateService.updateRateDoctor(patient, requestDTO, id);
     }
 
+    public void deleteRateDoctor(Authentication authentication, Long doctorId) {
+        User user = (User) authentication.getPrincipal();
+        PatientProfile patient = patientLookupService.getPatientByUser(user);
+        rateService.deleteRateDoctor(patient, doctorId);
+    }
 }

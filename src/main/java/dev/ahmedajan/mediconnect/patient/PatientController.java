@@ -123,4 +123,12 @@ public class PatientController {
                                            @PathVariable("doctor-id") Long id){
         return ResponseEntity.ok(patientService.updateRateDoctor(authentication, requestDTO, id));
     }
+
+    @DeleteMapping("/doctors/{doctor-id}/rate")
+    public ResponseEntity<Long> deleteRateDoctor(
+            Authentication authentication,
+            @PathVariable("doctor-id") Long doctorId) {
+        patientService.deleteRateDoctor(authentication, doctorId);
+        return ResponseEntity.noContent().build();
+    }
 }

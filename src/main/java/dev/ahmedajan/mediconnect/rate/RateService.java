@@ -33,8 +33,8 @@ public class RateService {
         return rateRepository.save(rate).getId();
     }
 
-    public Long updateRateDoctor(PatientProfile patient, @Valid RateRequestDTO requestDTO, Long id) {
-        DoctorProfile doc = doctorRepository.findById(id)
+    public Long updateRateDoctor(PatientProfile patient, @Valid RateRequestDTO requestDTO, Long doctorId) {
+        DoctorProfile doc = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new IllegalArgumentException("Couldn't find a doctor with that id"));
 
         Rate rate = rateRepository.findByDoctorIdAndPatientId(doc.getId(), patient.getId())
@@ -43,5 +43,15 @@ public class RateService {
         rate.setRate(requestDTO.getRate());
 
         return rateRepository.save(rate).getId();
+    }
+
+    public void deleteRateDoctor(PatientProfile patient, Long doctorId) {
+        DoctorProfile doc = doctorRepository.findById(doctorId)
+                .orElseThrow(() -> new IllegalArgumentException("Couldn't find a doctor with that id"));
+
+        Rate rate = rateRepository.findByDoctorIdAndPatientId(doc.getId(), patient.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Cannot find rate!"));
+
+        rateRepository.delete(rate);
     }
 }
