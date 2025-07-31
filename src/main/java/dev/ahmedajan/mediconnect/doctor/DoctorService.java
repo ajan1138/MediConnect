@@ -1,10 +1,14 @@
 package dev.ahmedajan.mediconnect.doctor;
 
 import dev.ahmedajan.mediconnect.admin.PageResponse;
+import dev.ahmedajan.mediconnect.appointment.Appointment;
+import dev.ahmedajan.mediconnect.appointment.AppointmentMapper;
+import dev.ahmedajan.mediconnect.appointment.AppointmentRepository;
+import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentResponseDTO;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorRequestDTO;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorResponseDTO;
+import dev.ahmedajan.mediconnect.exception.BusinessRuleException;
 import dev.ahmedajan.mediconnect.user.User;
-import dev.ahmedajan.mediconnect.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,7 +24,8 @@ public class DoctorService {
 
     private final DoctorRepository doctorRepository;
     private final DoctorMapper doctorMapper;
-    private final UserRepository userRepository;
+    private final AppointmentRepository appointmentRepository;
+    private final AppointmentMapper appointmentMapper;
 
     public PageResponse<DoctorResponseDTO> findAllDoctors(int page, int size){
         PageRequest pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
@@ -90,5 +95,30 @@ public class DoctorService {
 
         doctorRepository.save(doctor);
         return doctorMapper.toDoctorResponseDTO(doctor);
+    }
+
+    public PageResponse<AppointmentResponseDTO> getAppointments
+            (Authentication authentication, int page, int size) {
+
+        User user = (User) authentication.getPrincipal();
+        DoctorProfile doctor = doctorRepository.getDoctorByUser(user)
+                .orElseThrow(() -> new BusinessRuleException("You have to be user to be able for this action!"));
+
+        PageRequest pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+        Page<Appointment> appointments = appointmentRepository.getAppointmentByDoctor(pageable, doctor);
+
+        List<AppointmentResponseDTO> appointmentsResponse = appointments.stream()
+                .map(appointmentMapper::toAppointmentResponseDTO)
+                .toList();
+
+        return new PageResponse<>(
+                appointmentsResponse,
+                appointments.getNumber(),
+                appointments.getSize(),
+                (int) appointments.getTotalElements(),
+                appointments.getTotalPages(),
+                appointments.isFirst(),
+                appointments.isLast()
+        );
     }
 }

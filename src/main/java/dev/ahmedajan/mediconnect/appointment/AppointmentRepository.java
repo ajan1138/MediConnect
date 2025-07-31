@@ -1,5 +1,6 @@
 package dev.ahmedajan.mediconnect.appointment;
 
+import dev.ahmedajan.mediconnect.doctor.DoctorProfile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,5 +20,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     Optional<Appointment> getAppointmentById(Long id);
 
     boolean existsByPatient_IdAndTimeSlot_DateAndIdNot(Long patientId, LocalDate date, Long appointmentId);
+
+    Page<Appointment> getAppointmentByDoctor(Pageable pageable, DoctorProfile doctor);
 }
 
