@@ -1,9 +1,13 @@
 package dev.ahmedajan.mediconnect.doctor.dto;
 
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 @Builder
-public class PublicDoctorDTO {
+@Getter
+@Setter
+public class DoctorResponseDTO {
     private Long id;
     private String name;
     private String fullName;

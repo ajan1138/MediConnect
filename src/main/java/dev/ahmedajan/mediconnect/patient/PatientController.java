@@ -4,7 +4,7 @@ import dev.ahmedajan.mediconnect.admin.PageResponse;
 import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentRequest;
 import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentResponseDTO;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotTime;
-import dev.ahmedajan.mediconnect.doctor.dto.PublicDoctorDTO;
+import dev.ahmedajan.mediconnect.doctor.dto.DoctorResponseDTO;
 import dev.ahmedajan.mediconnect.patient.DTO.PatientRequestDTO;
 import dev.ahmedajan.mediconnect.patient.DTO.PatientResponseDTO;
 import dev.ahmedajan.mediconnect.rate.DTO.RateRequestDTO;
@@ -25,7 +25,7 @@ public class PatientController {
 
     // doctors
     @GetMapping("/doctors")
-    public ResponseEntity<PageResponse<PublicDoctorDTO>> getDoctors(
+    public ResponseEntity<PageResponse<DoctorResponseDTO>> getDoctors(
             @RequestParam(name = "page", defaultValue = "1", required = false) int page,
             @RequestParam(name = "size", defaultValue = "10", required = false) int size
     ) {
@@ -33,7 +33,7 @@ public class PatientController {
     }
 
     @GetMapping("/doctors/{doctor-id}")
-    public ResponseEntity<PublicDoctorDTO> getDoctor(
+    public ResponseEntity<DoctorResponseDTO> getDoctor(
             @PathVariable("doctor-id") Long id
     ) {
         return ResponseEntity.ok(patientService.findDoctorById(id));

@@ -7,7 +7,7 @@ import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentResponseDTO;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotService;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotTime;
 import dev.ahmedajan.mediconnect.doctor.DoctorService;
-import dev.ahmedajan.mediconnect.doctor.dto.PublicDoctorDTO;
+import dev.ahmedajan.mediconnect.doctor.dto.DoctorResponseDTO;
 import dev.ahmedajan.mediconnect.patient.DTO.PatientRequestDTO;
 import dev.ahmedajan.mediconnect.patient.DTO.PatientResponseDTO;
 import dev.ahmedajan.mediconnect.rate.DTO.RateRequestDTO;
@@ -37,11 +37,11 @@ public class PatientService {
     private final PatientLookupService patientLookupService;
     private final RateService rateService;
 
-    public PageResponse<PublicDoctorDTO> findAllDoctors(int page, int size){
+    public PageResponse<DoctorResponseDTO> findAllDoctors(int page, int size){
         return doctorService.findAllDoctors(page, size);
     }
 
-    public PublicDoctorDTO findDoctorById(Long id) {
+    public DoctorResponseDTO findDoctorById(Long id) {
         return doctorService.findDoctorById(id);
     }
 

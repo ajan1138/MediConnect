@@ -68,4 +68,28 @@ public class DoctorProfile {
         return user.getFullName();
     }
 
+    public String getEmail(){
+        return user.getEmail();
+    }
+
+    public void setEmail(String email){
+        user.setEmail(email);
+    }
+
+    public String getFirstName(){
+        return user.getFirstName();
+    }
+
+    public void setFirstName(String email){
+        user.setFirstName(email);
+    }
+
+    public String getLastName(){
+        return user.getLastName();
+    }
+
+    public void setLastName(String email){
+        user.setLastName(email);
+    }
+
 }

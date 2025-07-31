@@ -5,7 +5,6 @@ import dev.ahmedajan.mediconnect.doctor.DoctorRepository;
 import dev.ahmedajan.mediconnect.exception.BusinessRuleException;
 import dev.ahmedajan.mediconnect.patient.PatientProfile;
 import dev.ahmedajan.mediconnect.rate.DTO.RateRequestDTO;
-import dev.ahmedajan.mediconnect.user.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +16,6 @@ public class RateService {
     private final DoctorRepository doctorRepository;
     private final RateMapper rateMapper;
     private final RateRepository rateRepository;
-    private final UserRepository userRepository;
 
     public Long rateDoctor(PatientProfile patient, @Valid RateRequestDTO requestDTO, Long id) {
 

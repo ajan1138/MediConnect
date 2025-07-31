@@ -1,6 +1,6 @@
 package dev.ahmedajan.mediconnect.doctor;
 
-import dev.ahmedajan.mediconnect.doctor.dto.PublicDoctorDTO;
+import dev.ahmedajan.mediconnect.doctor.dto.DoctorResponseDTO;
 import dev.ahmedajan.mediconnect.user.User;
 import lombok.Builder;
 import org.springframework.stereotype.Service;
@@ -26,8 +26,8 @@ public class DoctorMapper {
     }
 
 
-    public static PublicDoctorDTO toDoctorDTO(DoctorProfile doc) {
-        return PublicDoctorDTO.builder()
+    public DoctorResponseDTO toDoctorResponseDTO(DoctorProfile doc) {
+        return DoctorResponseDTO.builder()
                 .id(doc.getId())
                 .name(doc.getUser().getName())
                 .fullName(doc.getUser().getFullName())

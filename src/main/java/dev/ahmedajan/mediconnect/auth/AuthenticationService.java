@@ -93,7 +93,9 @@ public class AuthenticationService {
                 adminEmail,
                 "Admin",
                 EmailTemplateName.DOCTOR_PENDING_APPROVAL,
-                "url/needsToBeAdded" + "?doctorId=" + doctor.getId(),
+                //"url/needsToBeAdded" + "?doctorId=" + doctor.getId()
+                // remake this url to be doctor's,
+                activationUrl,
                 null,
                 "New doctor registration - Approval Required"
         );
