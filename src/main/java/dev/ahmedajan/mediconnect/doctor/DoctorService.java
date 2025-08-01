@@ -9,6 +9,8 @@ import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentResponseDTO;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorRequestDTO;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorResponseDTO;
 import dev.ahmedajan.mediconnect.exception.BusinessRuleException;
+import dev.ahmedajan.mediconnect.patient.DTO.PatientResponseDTO;
+import dev.ahmedajan.mediconnect.patient.PatientMapper;
 import dev.ahmedajan.mediconnect.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,6 +30,7 @@ public class DoctorService {
     private final AppointmentRepository appointmentRepository;
     private final AppointmentMapper appointmentMapper;
     private final AppointmentService appointmentService;
+    private final PatientMapper patientMapper;
 
     public PageResponse<DoctorResponseDTO> findAllDoctors(int page, int size){
         PageRequest pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
@@ -133,5 +136,17 @@ public class DoctorService {
         User user = (User) authentication.getPrincipal();
         return doctorRepository.getDoctorByUser(user)
                 .orElseThrow(() -> new BusinessRuleException("You have to be user to be able for this action!"));
+    }
+
+    public PatientResponseDTO getPatient(Authentication authentication, Long appointmentId) {
+        DoctorProfile doc = getDoctorByUser(authentication);
+
+        Appointment appointment = appointmentService.getAppointmentById(appointmentId);
+
+        if (appointment.getDoctor().getId() != doc.getId()) {
+            throw new BusinessRuleException("Cannot see the patient of another doctor!");
+        }
+
+        return patientMapper.toPatientResponseDTO(appointment.getPatient());
     }
 }

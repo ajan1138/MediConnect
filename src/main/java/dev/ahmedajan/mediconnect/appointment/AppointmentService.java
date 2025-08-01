@@ -226,4 +226,8 @@ public class AppointmentService {
         return appointmentMapper.toAppointmentResponseDTO(appointment);
     }
 
+    public Appointment getAppointmentById(Long appointmentId) {
+        return appointmentRepository.getAppointmentById(appointmentId)
+                .orElseThrow(() -> new IllegalArgumentException("Wrong Appointment id provided"));
+    }
 }

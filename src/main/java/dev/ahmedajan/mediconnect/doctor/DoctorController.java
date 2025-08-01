@@ -4,6 +4,7 @@ import dev.ahmedajan.mediconnect.admin.PageResponse;
 import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentResponseDTO;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorRequestDTO;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorResponseDTO;
+import dev.ahmedajan.mediconnect.patient.DTO.PatientResponseDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -56,5 +57,12 @@ public class DoctorController {
             ) {
 
         return ResponseEntity.ok(doctorService.declineStatus(authentication, appointmentId));
+    }
+
+    @GetMapping("/appointments/{appointment-id}/patient")
+    public ResponseEntity<PatientResponseDTO> getPatient(
+            Authentication authentication, @PathVariable("appointment-id") Long appointmentId
+    ) {
+        return ResponseEntity.ok(doctorService.getPatient(authentication, appointmentId));
     }
 }
