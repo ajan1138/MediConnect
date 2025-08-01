@@ -3,7 +3,6 @@ package dev.ahmedajan.mediconnect.appointment;
 import dev.ahmedajan.mediconnect.admin.PageResponse;
 import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentRequest;
 import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentResponseDTO;
-import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentStatusPatchRequest;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotMapper;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotRepository;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotService;
@@ -26,6 +25,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+
+import static dev.ahmedajan.mediconnect.appointment.AppointmentStatus.APPROVED;
+import static dev.ahmedajan.mediconnect.appointment.AppointmentStatus.REJECTED;
 
 @RequiredArgsConstructor
 @Service
@@ -186,9 +188,8 @@ public class AppointmentService {
                 Objects.equals(slot1.getEndTime(), slot2.getEndTime());
     }
 
-    public AppointmentResponseDTO updateStatus(
+    public AppointmentResponseDTO acceptStatus(
             DoctorProfile doctor,
-            AppointmentStatusPatchRequest request,
             Long appointmentId) {
 
         Appointment appointment = appointmentRepository.findById(appointmentId)
@@ -199,12 +200,29 @@ public class AppointmentService {
             throw new BusinessRuleException("You can only change your appointments!");
         }
 
-        AppointmentStatus newStatus = AppointmentStatus.fromMessage(request.getStatus());
-
-        appointment.setStatus(newStatus);
-
+        appointment.setStatus(APPROVED);
         appointmentRepository.save(appointment);
+        return appointmentMapper.toAppointmentResponseDTO(appointment);
+    }
 
+    public AppointmentResponseDTO declineStatus(
+            DoctorProfile doctor,
+            Long appointmentId) {
+
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new IllegalArgumentException("No such appointment with that id!: "
+                        + appointmentId));
+
+        if (doctor.getId() != appointment.getDoctor().getId()) {
+            throw new BusinessRuleException("You can only change your appointments!");
+        }
+
+        if (APPROVED.equals(appointment.getStatus()) || REJECTED.equals(appointment.getStatus())) {
+            throw new BusinessRuleException("You already accepted the request!");
+        }
+
+        appointment.setStatus(AppointmentStatus.REJECTED);
+        appointmentRepository.save(appointment);
         return appointmentMapper.toAppointmentResponseDTO(appointment);
     }
 

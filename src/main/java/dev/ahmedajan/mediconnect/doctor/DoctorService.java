@@ -6,7 +6,6 @@ import dev.ahmedajan.mediconnect.appointment.AppointmentMapper;
 import dev.ahmedajan.mediconnect.appointment.AppointmentRepository;
 import dev.ahmedajan.mediconnect.appointment.AppointmentService;
 import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentResponseDTO;
-import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentStatusPatchRequest;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorRequestDTO;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorResponseDTO;
 import dev.ahmedajan.mediconnect.exception.BusinessRuleException;
@@ -81,9 +80,7 @@ public class DoctorService {
     }
 
     public DoctorResponseDTO updateDoctor(Authentication authentication, DoctorRequestDTO request) {
-        User user = (User) authentication.getPrincipal();
-        DoctorProfile doctor = doctorRepository.getDoctorByUser(user)
-                .orElseThrow( () -> new IllegalArgumentException("Couldn't find a doctor with that ID"));
+        DoctorProfile doctor = getDoctorByUser(authentication);
 
         doctor.setEmail(request.getEmail());
         doctor.setFirstName(request.getFirstName());
@@ -103,10 +100,7 @@ public class DoctorService {
     public PageResponse<AppointmentResponseDTO> getAppointments
             (Authentication authentication, int page, int size) {
 
-        User user = (User) authentication.getPrincipal();
-        DoctorProfile doctor = doctorRepository.getDoctorByUser(user)
-                .orElseThrow(() -> new BusinessRuleException("You have to be user to be able for this action!"));
-
+        DoctorProfile doctor = getDoctorByUser(authentication);
         PageRequest pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
         Page<Appointment> appointments = appointmentRepository.getAppointmentByDoctor(pageable, doctor);
 
@@ -125,11 +119,19 @@ public class DoctorService {
         );
     }
 
-    public AppointmentResponseDTO updateStatus(Authentication authentication, AppointmentStatusPatchRequest request, Long appointmentId) {
-        User user = (User) authentication.getPrincipal();
-        DoctorProfile doctor = doctorRepository.getDoctorByUser(user)
-                .orElseThrow(() -> new BusinessRuleException("You have to be user to be able for this action!"));
+    public AppointmentResponseDTO acceptStatus(Authentication authentication, Long appointmentId) {
+        DoctorProfile doctor = getDoctorByUser(authentication);
+        return appointmentService.acceptStatus(doctor, appointmentId);
+    }
 
-        return appointmentService.updateStatus(doctor, request ,appointmentId);
+    public AppointmentResponseDTO declineStatus(Authentication authentication, Long appointmentId) {
+        DoctorProfile doctor = getDoctorByUser(authentication);
+        return appointmentService.declineStatus(doctor, appointmentId);
+    }
+
+    private DoctorProfile getDoctorByUser(Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        return doctorRepository.getDoctorByUser(user)
+                .orElseThrow(() -> new BusinessRuleException("You have to be user to be able for this action!"));
     }
 }
