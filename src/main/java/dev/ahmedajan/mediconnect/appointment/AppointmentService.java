@@ -228,6 +228,24 @@ public class AppointmentService {
         return appointmentMapper.toAppointmentResponseDTO(appointment);
     }
 
+    public AppointmentResponseDTO completeAppointment(DoctorProfile doctor, Long appointmentId) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new IllegalArgumentException("No such appointment with that id!: "
+                        + appointmentId));
+
+        if (doctor.getId() != appointment.getDoctor().getId()) {
+            throw new BusinessRuleException("You can only change your appointments!");
+        }
+
+        if (APPROVED.equals(appointment.getStatus()) || REJECTED.equals(appointment.getStatus())) {
+            throw new BusinessRuleException("You already accepted the request!");
+        }
+
+        appointment.setStatus(AppointmentStatus.COMPLETED);
+        appointmentRepository.save(appointment);
+        return appointmentMapper.toAppointmentResponseDTO(appointment);
+    }
+
     public Appointment getAppointmentById(Long appointmentId) {
         return appointmentRepository.getAppointmentById(appointmentId)
                 .orElseThrow(() -> new IllegalArgumentException("Wrong Appointment id provided"));

@@ -6,6 +6,7 @@ import dev.ahmedajan.mediconnect.appointment.AppointmentMapper;
 import dev.ahmedajan.mediconnect.appointment.AppointmentRepository;
 import dev.ahmedajan.mediconnect.appointment.AppointmentService;
 import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentResponseDTO;
+import dev.ahmedajan.mediconnect.appointment.DTO.CancellationRequest;
 import dev.ahmedajan.mediconnect.appointment.DTO.NotesDiagnosisRequest;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotService;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorRequestDTO;
@@ -136,6 +137,11 @@ public class DoctorService {
         return appointmentService.declineStatus(doctor, appointmentId);
     }
 
+    public AppointmentResponseDTO completeAppointment(Authentication authentication, Long appointmentId) {
+        DoctorProfile doctor = getDoctorByUser(authentication);
+        return appointmentService.completeAppointment(doctor, appointmentId);
+    }
+
     private DoctorProfile getDoctorByUser(Authentication authentication){
         User user = (User) authentication.getPrincipal();
         return doctorRepository.getDoctorByUser(user)
@@ -166,5 +172,15 @@ public class DoctorService {
         }
 
         return appointmentService.postNotesAndDiagnosis(appointment, request);
+    }
+
+    public AppointmentResponseDTO cancelAppointment(
+            Authentication authentication,
+            Long appointmentId,
+            @Valid CancellationRequest request
+    ) {
+        DoctorProfile doctorProfile = getDoctorByUser(authentication);
+
+
     }
 }

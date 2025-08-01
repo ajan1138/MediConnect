@@ -2,6 +2,7 @@ package dev.ahmedajan.mediconnect.doctor;
 
 import dev.ahmedajan.mediconnect.admin.PageResponse;
 import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentResponseDTO;
+import dev.ahmedajan.mediconnect.appointment.DTO.CancellationRequest;
 import dev.ahmedajan.mediconnect.appointment.DTO.NotesDiagnosisRequest;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorRequestDTO;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorResponseDTO;
@@ -58,6 +59,21 @@ public class DoctorController {
             ) {
 
         return ResponseEntity.ok(doctorService.declineStatus(authentication, appointmentId));
+    }
+
+    @PatchMapping("/appointments/{appointment-id}/complete")
+    public ResponseEntity<AppointmentResponseDTO> completeAppointment(
+            Authentication authentication,
+            @PathVariable("appointment-id") Long appointmentId) {
+        return ResponseEntity.ok(doctorService.completeAppointment(authentication, appointmentId));
+    }
+
+    @PatchMapping("/appointments/{appointment-id}/cancel")
+    public ResponseEntity<AppointmentResponseDTO> cancelAppointment(
+            Authentication authentication,
+            @PathVariable("appointment-id") Long appointmentId,
+            @RequestBody @Valid CancellationRequest request) {
+        return ResponseEntity.ok(doctorService.cancelAppointment(authentication, appointmentId, request));
     }
 
     @GetMapping("/appointments/{appointment-id}/patient")
