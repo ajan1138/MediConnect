@@ -6,6 +6,7 @@ import dev.ahmedajan.mediconnect.appointment.AppointmentMapper;
 import dev.ahmedajan.mediconnect.appointment.AppointmentRepository;
 import dev.ahmedajan.mediconnect.appointment.AppointmentService;
 import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentResponseDTO;
+import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotService;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorRequestDTO;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorResponseDTO;
 import dev.ahmedajan.mediconnect.exception.BusinessRuleException;
@@ -31,6 +32,7 @@ public class DoctorService {
     private final AppointmentMapper appointmentMapper;
     private final AppointmentService appointmentService;
     private final PatientMapper patientMapper;
+    private final ReservedSlotService reservedSlotService;
 
     public PageResponse<DoctorResponseDTO> findAllDoctors(int page, int size){
         PageRequest pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
@@ -146,6 +148,8 @@ public class DoctorService {
         if (appointment.getDoctor().getId() != doc.getId()) {
             throw new BusinessRuleException("Cannot see the patient of another doctor!");
         }
+
+        reservedSlotService.deleteByDoctor(doc);
 
         return patientMapper.toPatientResponseDTO(appointment.getPatient());
     }

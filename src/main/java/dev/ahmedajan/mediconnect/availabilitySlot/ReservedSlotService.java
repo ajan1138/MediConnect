@@ -43,4 +43,8 @@ public class ReservedSlotService {
     public void deleteReservedSlot(ReservedSlotTime oldSlot) {
         slotRepository.delete(oldSlot);
     }
+
+    public void deleteByDoctor(DoctorProfile doc) {
+        slotRepository.deleteByDoctor(doc);
+    }
 }
