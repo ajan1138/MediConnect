@@ -6,6 +6,7 @@ import dev.ahmedajan.mediconnect.appointment.AppointmentMapper;
 import dev.ahmedajan.mediconnect.appointment.AppointmentRepository;
 import dev.ahmedajan.mediconnect.appointment.AppointmentService;
 import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentResponseDTO;
+import dev.ahmedajan.mediconnect.appointment.DTO.NotesDiagnosisRequest;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotService;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorRequestDTO;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorResponseDTO;
@@ -13,6 +14,7 @@ import dev.ahmedajan.mediconnect.exception.BusinessRuleException;
 import dev.ahmedajan.mediconnect.patient.DTO.PatientResponseDTO;
 import dev.ahmedajan.mediconnect.patient.PatientMapper;
 import dev.ahmedajan.mediconnect.user.User;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -152,5 +154,17 @@ public class DoctorService {
         reservedSlotService.deleteByDoctor(doc);
 
         return patientMapper.toPatientResponseDTO(appointment.getPatient());
+    }
+
+    public Long postNotesAndDiagnosis(Authentication authentication, @Valid NotesDiagnosisRequest request, Long appointmentId) {
+        DoctorProfile doctor = getDoctorByUser(authentication);
+
+        Appointment appointment = appointmentService.getAppointmentById(appointmentId);
+
+        if (appointment.getDoctor().getId() != doctor.getId()) {
+            throw new BusinessRuleException("Cannot update the appointment of another user!");
+        }
+
+        return appointmentService.postNotesAndDiagnosis(appointment, request);
     }
 }

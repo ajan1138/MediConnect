@@ -14,13 +14,4 @@ public enum AppointmentStatus {
 
     @Getter
     private final String message;
-
-    public static AppointmentStatus fromMessage(String message) {
-        for (AppointmentStatus status : values()) {
-            if (status.getMessage().equalsIgnoreCase(message)) {
-                return status;
-            }
-        }
-        throw new IllegalArgumentException("No AppointmentStatus with message: " + message);
-    }
 }

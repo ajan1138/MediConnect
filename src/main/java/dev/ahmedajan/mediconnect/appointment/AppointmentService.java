@@ -3,6 +3,7 @@ package dev.ahmedajan.mediconnect.appointment;
 import dev.ahmedajan.mediconnect.admin.PageResponse;
 import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentRequest;
 import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentResponseDTO;
+import dev.ahmedajan.mediconnect.appointment.DTO.NotesDiagnosisRequest;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotMapper;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotRepository;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotService;
@@ -16,6 +17,7 @@ import dev.ahmedajan.mediconnect.patient.PatientProfile;
 import dev.ahmedajan.mediconnect.user.User;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -229,5 +231,18 @@ public class AppointmentService {
     public Appointment getAppointmentById(Long appointmentId) {
         return appointmentRepository.getAppointmentById(appointmentId)
                 .orElseThrow(() -> new IllegalArgumentException("Wrong Appointment id provided"));
+    }
+
+    public Long postNotesAndDiagnosis(Appointment appointment, @Valid NotesDiagnosisRequest request) {
+
+        if (!Objects.equals(request.getDiagnosis(), "")) {
+            appointment.setDiagnosis(request.getDiagnosis());
+        }
+
+        if (!Objects.equals(request.getNotes(), "")) {
+            appointment.setNotes(request.getNotes());
+        }
+
+        return appointmentRepository.save(appointment).getId();
     }
 }

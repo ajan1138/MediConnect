@@ -2,6 +2,7 @@ package dev.ahmedajan.mediconnect.doctor;
 
 import dev.ahmedajan.mediconnect.admin.PageResponse;
 import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentResponseDTO;
+import dev.ahmedajan.mediconnect.appointment.DTO.NotesDiagnosisRequest;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorRequestDTO;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorResponseDTO;
 import dev.ahmedajan.mediconnect.patient.DTO.PatientResponseDTO;
@@ -64,5 +65,14 @@ public class DoctorController {
             Authentication authentication, @PathVariable("appointment-id") Long appointmentId
     ) {
         return ResponseEntity.ok(doctorService.getPatient(authentication, appointmentId));
+    }
+
+    @PostMapping("/appointments/{appointment-id}")
+    public ResponseEntity<Long> postNotesAndDiagnosis(
+            Authentication authentication,
+            @RequestBody @Valid NotesDiagnosisRequest request,
+            @PathVariable("appointment-id") Long appointmentId
+            ) {
+        return ResponseEntity.ok(doctorService.postNotesAndDiagnosis(authentication, request, appointmentId));
     }
 }
