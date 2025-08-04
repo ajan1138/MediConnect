@@ -47,4 +47,8 @@ public class PrescriptionService {
 
         return saved.getId();
     }
+
+    public Prescription getPrescriptionById(Long id) {
+        return repository.getReferenceById(id);
+    }
 }

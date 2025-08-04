@@ -8,8 +8,11 @@ import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotService;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotTime;
 import dev.ahmedajan.mediconnect.doctor.DoctorService;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorResponseDTO;
+import dev.ahmedajan.mediconnect.exception.BusinessRuleException;
 import dev.ahmedajan.mediconnect.patient.DTO.PatientRequestDTO;
 import dev.ahmedajan.mediconnect.patient.DTO.PatientResponseDTO;
+import dev.ahmedajan.mediconnect.prescription.Prescription;
+import dev.ahmedajan.mediconnect.prescription.PrescriptionService;
 import dev.ahmedajan.mediconnect.rate.DTO.RateRequestDTO;
 import dev.ahmedajan.mediconnect.rate.RateService;
 import dev.ahmedajan.mediconnect.user.TokenRepository;
@@ -18,10 +21,14 @@ import dev.ahmedajan.mediconnect.user.UserRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +43,7 @@ public class PatientService {
     private final TokenRepository tokenRepository;
     private final PatientLookupService patientLookupService;
     private final RateService rateService;
+    private final PrescriptionService prescriptionService;
 
     public PageResponse<DoctorResponseDTO> findAllDoctors(int page, int size){
         return doctorService.findAllDoctors(page, size);
@@ -139,5 +147,30 @@ public class PatientService {
         User user = (User) authentication.getPrincipal();
         PatientProfile patient = patientLookupService.getPatientByUser(user);
         rateService.deleteRateDoctor(patient, doctorId);
+    }
+
+    // Prescription
+    @Transactional
+    public ResponseEntity<byte[]> getDownloadPrescription(Authentication authentication, Long prescriptionId) {
+        User user = (User) authentication.getPrincipal();
+        PatientProfile patient = getPatientProfile(user);
+
+        Prescription prescription = prescriptionService.getPrescriptionById(prescriptionId);
+
+        if (!Objects.equals(prescription.getPatientId(), patient.getId())) {
+            throw new BusinessRuleException("Cannot download the prescription of another patient! ");
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(prescription.getFileType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + prescription.getFileName() + "\"")
+                .body(prescription.getFileData());
+
+    }
+
+    public PatientProfile getPatientProfile(User user) {
+        return patientRepository.getPatientProfileByUser(user)
+                .orElseThrow(() -> new IllegalArgumentException("Couldn't find patient :O"));
     }
 }

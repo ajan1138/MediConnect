@@ -131,4 +131,13 @@ public class PatientController {
         patientService.deleteRateDoctor(authentication, doctorId);
         return ResponseEntity.noContent().build();
     }
-}
+
+    // Prescriptions
+    @GetMapping("/prescriptions/{prescription-id}/download")
+    public ResponseEntity<byte[]> getDownloadPrescription(
+            Authentication authentication,
+            @PathVariable("prescription-id") Long prescriptionId
+    ) {
+        return patientService.getDownloadPrescription(authentication, prescriptionId);
+    }
+ }

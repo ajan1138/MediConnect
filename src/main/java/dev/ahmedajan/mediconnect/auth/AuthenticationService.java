@@ -163,7 +163,7 @@ public class AuthenticationService {
     private int getTokenExpirationMinutes(Role role) {
         return switch (role) {
             case DOCTOR -> 1440;
-            case PATIENT -> 15;
+            case PATIENT -> 1440;
             default -> 15;
         };
     }
