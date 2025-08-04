@@ -23,6 +23,18 @@ public class Prescription {
 
     private String description;
 
-    private String fileUrl;
+    private String fileName;
 
+    private String fileType;
+
+    @Lob
+    private byte[] fileData;
+
+    public Long getDoctorId() {
+        return appointment.getDoctor().getId();
+    }
+
+    public Long getPatientId() {
+        return appointment.getPatient().getId();
+    }
 }

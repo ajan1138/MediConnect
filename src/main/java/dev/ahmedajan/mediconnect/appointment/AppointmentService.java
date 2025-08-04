@@ -28,8 +28,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
-import static dev.ahmedajan.mediconnect.appointment.AppointmentStatus.APPROVED;
-import static dev.ahmedajan.mediconnect.appointment.AppointmentStatus.REJECTED;
+import static dev.ahmedajan.mediconnect.appointment.AppointmentStatus.*;
 
 @RequiredArgsConstructor
 @Service
@@ -262,5 +261,22 @@ public class AppointmentService {
         }
 
         return appointmentRepository.save(appointment).getId();
+    }
+
+    public AppointmentResponseDTO cancelAppointment(DoctorProfile doctor, Long appointmentId) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new IllegalArgumentException("No such appointment with that id!: "
+                        + appointmentId));
+
+        if (appointment.getDoctor().getId() != doctor.getId()) {
+            throw new BusinessRuleException("Cannot cancel the appointment of another user!");
+        }
+
+        appointment.setStatus(CANCELLED);
+
+        appointmentRepository.save(appointment);
+        slotService.deleteReservedSlot(appointment.getTimeSlot());
+
+        return appointmentMapper.toAppointmentResponseDTO(appointment);
     }
 }

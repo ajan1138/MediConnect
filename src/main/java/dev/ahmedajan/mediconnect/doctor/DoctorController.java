@@ -2,12 +2,13 @@ package dev.ahmedajan.mediconnect.doctor;
 
 import dev.ahmedajan.mediconnect.admin.PageResponse;
 import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentResponseDTO;
-import dev.ahmedajan.mediconnect.appointment.DTO.CancellationRequest;
 import dev.ahmedajan.mediconnect.appointment.DTO.NotesDiagnosisRequest;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorRequestDTO;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorResponseDTO;
 import dev.ahmedajan.mediconnect.patient.DTO.PatientResponseDTO;
+import dev.ahmedajan.mediconnect.prescription.DTO.PrescriptionRequest;
 import jakarta.validation.Valid;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -71,9 +72,8 @@ public class DoctorController {
     @PatchMapping("/appointments/{appointment-id}/cancel")
     public ResponseEntity<AppointmentResponseDTO> cancelAppointment(
             Authentication authentication,
-            @PathVariable("appointment-id") Long appointmentId,
-            @RequestBody @Valid CancellationRequest request) {
-        return ResponseEntity.ok(doctorService.cancelAppointment(authentication, appointmentId, request));
+            @PathVariable("appointment-id") Long appointmentId) {
+        return ResponseEntity.ok(doctorService.cancelAppointment(authentication, appointmentId));
     }
 
     @GetMapping("/appointments/{appointment-id}/patient")
@@ -90,5 +90,15 @@ public class DoctorController {
             @PathVariable("appointment-id") Long appointmentId
             ) {
         return ResponseEntity.ok(doctorService.postNotesAndDiagnosis(authentication, request, appointmentId));
+    }
+
+    @PostMapping(value = "/appointments/{appointment-id}/prescription",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Long> postPrescription(
+            Authentication authentication,
+            @PathVariable("appointment-id") Long appointmentId,
+            @ModelAttribute PrescriptionRequest request
+            ){
+        return ResponseEntity.ok(doctorService.postPrescription(authentication, appointmentId, request));
     }
 }

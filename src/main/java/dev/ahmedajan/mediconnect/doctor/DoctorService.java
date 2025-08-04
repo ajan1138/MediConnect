@@ -6,7 +6,6 @@ import dev.ahmedajan.mediconnect.appointment.AppointmentMapper;
 import dev.ahmedajan.mediconnect.appointment.AppointmentRepository;
 import dev.ahmedajan.mediconnect.appointment.AppointmentService;
 import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentResponseDTO;
-import dev.ahmedajan.mediconnect.appointment.DTO.CancellationRequest;
 import dev.ahmedajan.mediconnect.appointment.DTO.NotesDiagnosisRequest;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotService;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorRequestDTO;
@@ -14,6 +13,8 @@ import dev.ahmedajan.mediconnect.doctor.dto.DoctorResponseDTO;
 import dev.ahmedajan.mediconnect.exception.BusinessRuleException;
 import dev.ahmedajan.mediconnect.patient.DTO.PatientResponseDTO;
 import dev.ahmedajan.mediconnect.patient.PatientMapper;
+import dev.ahmedajan.mediconnect.prescription.DTO.PrescriptionRequest;
+import dev.ahmedajan.mediconnect.prescription.PrescriptionService;
 import dev.ahmedajan.mediconnect.user.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,7 @@ public class DoctorService {
     private final AppointmentService appointmentService;
     private final PatientMapper patientMapper;
     private final ReservedSlotService reservedSlotService;
+    private final PrescriptionService prescriptionService;
 
     public PageResponse<DoctorResponseDTO> findAllDoctors(int page, int size){
         PageRequest pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
@@ -176,11 +178,19 @@ public class DoctorService {
 
     public AppointmentResponseDTO cancelAppointment(
             Authentication authentication,
-            Long appointmentId,
-            @Valid CancellationRequest request
+            Long appointmentId
     ) {
-        DoctorProfile doctorProfile = getDoctorByUser(authentication);
+        DoctorProfile doctor = getDoctorByUser(authentication);
+        return appointmentService.cancelAppointment(doctor, appointmentId);
+    }
 
-
+    // prescriptions
+    public Long postPrescription(
+            Authentication authentication,
+            Long appointmentId,
+            PrescriptionRequest request) {
+        DoctorProfile doctor = getDoctorByUser(authentication);
+        Appointment appointment = appointmentService.getAppointmentById(appointmentId);
+        return prescriptionService.postPrescription(doctor, appointment, request);
     }
 }
