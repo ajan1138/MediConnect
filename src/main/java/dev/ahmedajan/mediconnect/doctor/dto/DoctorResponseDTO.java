@@ -12,7 +12,7 @@ public class DoctorResponseDTO {
     private String name;
     private String fullName;
     private String specialization;
-    private String city;
+    private String location;
     private String bio;
     private double averageRating;
 }

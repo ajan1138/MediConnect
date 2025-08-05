@@ -5,6 +5,7 @@ import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentRequest;
 import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentResponseDTO;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotTime;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorResponseDTO;
+import dev.ahmedajan.mediconnect.doctor.dto.DoctorSearchCriteria;
 import dev.ahmedajan.mediconnect.patient.DTO.PatientRequestDTO;
 import dev.ahmedajan.mediconnect.patient.DTO.PatientResponseDTO;
 import dev.ahmedajan.mediconnect.rate.DTO.RateRequestDTO;
@@ -37,6 +38,15 @@ public class PatientController {
             @PathVariable("doctor-id") Long id
     ) {
         return ResponseEntity.ok(patientService.findDoctorById(id));
+    }
+
+    @PostMapping("/doctors/search")
+    public ResponseEntity<PageResponse<DoctorResponseDTO>> searchDoctors(
+            @Valid @RequestBody DoctorSearchCriteria doctorSearchCriteria,
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(patientService.searchDoctors(doctorSearchCriteria, page, size));
     }
 
     @GetMapping("/doctors/available-slots/{doctor-id}")

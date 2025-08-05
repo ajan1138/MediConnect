@@ -10,6 +10,7 @@ import dev.ahmedajan.mediconnect.appointment.DTO.NotesDiagnosisRequest;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotService;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorRequestDTO;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorResponseDTO;
+import dev.ahmedajan.mediconnect.doctor.dto.DoctorSearchCriteria;
 import dev.ahmedajan.mediconnect.exception.BusinessRuleException;
 import dev.ahmedajan.mediconnect.patient.DTO.PatientResponseDTO;
 import dev.ahmedajan.mediconnect.patient.PatientMapper;
@@ -18,14 +19,20 @@ import dev.ahmedajan.mediconnect.prescription.PrescriptionService;
 import dev.ahmedajan.mediconnect.user.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static dev.ahmedajan.mediconnect.doctor.DoctorSpecifications.buildSpecification;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DoctorService {
@@ -66,7 +73,7 @@ public class DoctorService {
                 .id(doctorProfile.getId())
                 .fullName(doctorProfile.getUser().getFirstName() + " " + doctorProfile.getUser().getLastName())
                 .specialization(doctorProfile.getSpecialization())
-                .city(doctorProfile.getLocation())
+                .location(doctorProfile.getLocation())
                 .bio(doctorProfile.getBio())
                 .averageRating(doctorProfile.getRate())
                 .build();
@@ -197,5 +204,30 @@ public class DoctorService {
     public Long updatePrescription(Authentication authentication, Long prescriptionId, PrescriptionRequest request) {
         DoctorProfile doctor = getDoctorByUser(authentication);
         return prescriptionService.updatePrescription(doctor, prescriptionId, request);
+    }
+
+    public PageResponse<DoctorResponseDTO> searchDoctors(DoctorSearchCriteria criteria, int page, int size) {
+        try {
+            Pageable pageable = PageRequest.of(page - 1, size);
+            Specification<DoctorProfile> spec = buildSpecification(criteria);
+            Page<DoctorProfile> doctorPage = doctorRepository.findAll(spec, pageable);
+
+            return PageResponse.<DoctorResponseDTO>builder()
+                    .content(doctorPage.getContent()
+                            .stream()
+                            .map(doctorMapper::toDoctorResponseDTO)
+                            .toList())
+                    .number(doctorPage.getNumber() + 1)
+                    .size(doctorPage.getSize())
+                    .totalElements((int) doctorPage.getTotalElements())
+                    .totalPages(doctorPage.getTotalPages())
+                    .first(doctorPage.isFirst())
+                    .last(doctorPage.isLast())
+                    .build();
+
+        } catch (Exception e) {
+            log.error("Error searching doctors with criteria: {}", criteria, e);
+            throw new BusinessRuleException("Failed to search doctors");
+        }
     }
 }

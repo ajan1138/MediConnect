@@ -6,8 +6,10 @@ import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentRequest;
 import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentResponseDTO;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotService;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotTime;
+import dev.ahmedajan.mediconnect.doctor.DoctorRepository;
 import dev.ahmedajan.mediconnect.doctor.DoctorService;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorResponseDTO;
+import dev.ahmedajan.mediconnect.doctor.dto.DoctorSearchCriteria;
 import dev.ahmedajan.mediconnect.patient.DTO.PatientRequestDTO;
 import dev.ahmedajan.mediconnect.patient.DTO.PatientResponseDTO;
 import dev.ahmedajan.mediconnect.prescription.Prescription;
@@ -20,6 +22,7 @@ import dev.ahmedajan.mediconnect.user.UserRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PatientService {
@@ -42,6 +46,7 @@ public class PatientService {
     private final PatientLookupService patientLookupService;
     private final RateService rateService;
     private final PrescriptionService prescriptionService;
+    private final DoctorRepository doctorRepository;
 
     public PageResponse<DoctorResponseDTO> findAllDoctors(int page, int size){
         return doctorService.findAllDoctors(page, size);
@@ -81,6 +86,11 @@ public class PatientService {
         patientRepository.save(patient);
 
         return patient.getId();
+    }
+
+    public PageResponse<DoctorResponseDTO> searchDoctors(DoctorSearchCriteria criteria, int page, int size) {
+            return doctorService.searchDoctors(criteria, page, size);
+
     }
 
     @Transactional

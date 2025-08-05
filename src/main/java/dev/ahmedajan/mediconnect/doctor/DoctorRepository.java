@@ -3,12 +3,14 @@ package dev.ahmedajan.mediconnect.doctor;
 import dev.ahmedajan.mediconnect.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
-public interface DoctorRepository extends JpaRepository<DoctorProfile, Long> {
+public interface DoctorRepository extends JpaRepository<DoctorProfile, Long>, JpaSpecificationExecutor<DoctorProfile> {
 
     @Query("""
             SELECT d
@@ -19,4 +21,6 @@ public interface DoctorRepository extends JpaRepository<DoctorProfile, Long> {
     DoctorProfile getDoctorProfileById(long id);
 
     Optional<DoctorProfile> getDoctorByUser(User user);
+
+    Page<DoctorProfile> findAll(Specification<DoctorProfile> spec, Pageable pageable);
 }

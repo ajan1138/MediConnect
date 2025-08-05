@@ -32,7 +32,7 @@ public class DoctorMapper {
                 .name(doc.getUser().getName())
                 .fullName(doc.getUser().getFullName())
                 .specialization(doc.getSpecialization())
-                .city(doc.getLocation())
+                .location(doc.getLocation())
                 .bio(doc.getBio())
                 .averageRating(doc.getRate())
                 .build();
