@@ -8,7 +8,6 @@ import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotService;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotTime;
 import dev.ahmedajan.mediconnect.doctor.DoctorService;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorResponseDTO;
-import dev.ahmedajan.mediconnect.exception.BusinessRuleException;
 import dev.ahmedajan.mediconnect.patient.DTO.PatientRequestDTO;
 import dev.ahmedajan.mediconnect.patient.DTO.PatientResponseDTO;
 import dev.ahmedajan.mediconnect.prescription.Prescription;
@@ -28,7 +27,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -157,9 +155,9 @@ public class PatientService {
 
         Prescription prescription = prescriptionService.getPrescriptionById(prescriptionId);
 
-        if (!Objects.equals(prescription.getPatientId(), patient.getId())) {
-            throw new BusinessRuleException("Cannot download the prescription of another patient! ");
-        }
+//        if (!Objects.equals(prescription.getPatientId(), patient.getId())) {
+//            throw new BusinessRuleException("Cannot download the prescription of another patient! ");
+//        }
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(prescription.getFileType()))

@@ -101,4 +101,14 @@ public class DoctorController {
             ){
         return ResponseEntity.ok(doctorService.postPrescription(authentication, appointmentId, request));
     }
+
+    @PutMapping(value = "/prescriptions/{prescription-id}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Long> updatePrescription(
+            Authentication authentication,
+            @PathVariable("prescription-id") Long prescriptionId,
+            @ModelAttribute PrescriptionRequest request
+    ){
+        return ResponseEntity.ok(doctorService.updatePrescription(authentication, prescriptionId, request));
+    }
 }

@@ -15,6 +15,7 @@ import java.io.IOException;
 public class PrescriptionService {
 
     private final PrescriptionRepository repository;
+    private final PrescriptionRepository prescriptionRepository;
 
 
     @Transactional
@@ -50,5 +51,29 @@ public class PrescriptionService {
 
     public Prescription getPrescriptionById(Long id) {
         return repository.getReferenceById(id);
+    }
+
+    public Long updatePrescription(
+            DoctorProfile doctor,
+            Long prescriptionId,
+            PrescriptionRequest request) {
+
+        MultipartFile file = request.getFile();
+
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("File must not be empty");
+        }
+
+        Prescription prescription = prescriptionRepository.findById(prescriptionId)
+                .orElseThrow(() -> new IllegalArgumentException("Illegal id for prescription!"));
+
+        try {
+        prescription.setFileData(request.getFile().getBytes());
+        prescription.setDescription(request.getDescription());
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't save unfortunately!");
+        }
+
+        return prescriptionRepository.save(prescription).getId();
     }
 }

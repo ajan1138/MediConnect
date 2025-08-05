@@ -193,4 +193,9 @@ public class DoctorService {
         Appointment appointment = appointmentService.getAppointmentById(appointmentId);
         return prescriptionService.postPrescription(doctor, appointment, request);
     }
+
+    public Long updatePrescription(Authentication authentication, Long prescriptionId, PrescriptionRequest request) {
+        DoctorProfile doctor = getDoctorByUser(authentication);
+        return prescriptionService.updatePrescription(doctor, prescriptionId, request);
+    }
 }
