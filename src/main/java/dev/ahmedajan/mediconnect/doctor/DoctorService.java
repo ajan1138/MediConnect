@@ -239,4 +239,14 @@ public class DoctorService {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdDate").descending());
         return appointmentService.getUpcomingAppointmentsDoctor(doc.getId(), pageable);
     }
+
+    public PageResponse<AppointmentResponseDTO> getRejectedAppointmentsDoctor(
+            Authentication authentication,
+            int page,
+            int size) {
+
+        DoctorProfile doc = getDoctorByUser(authentication);
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdDate").descending());
+        return appointmentService.getRejectedAppointmentsDoctor(doc.getId(), pageable);
+    }
 }

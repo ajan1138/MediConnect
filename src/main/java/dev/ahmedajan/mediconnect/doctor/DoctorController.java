@@ -101,6 +101,15 @@ public class DoctorController {
         return ResponseEntity.ok(doctorService.getUpcomingAppointmentsDoctor(authentication, page, size));
     }
 
+    @GetMapping("/appointments/rejected")
+    public ResponseEntity<PageResponse<AppointmentResponseDTO>> getRejectedAppointmentsDoctor(
+            Authentication authentication,
+            @RequestParam(defaultValue = "1",required = false, name = "page") int page,
+            @RequestParam(defaultValue = "10",required = false, name = "size") int size
+    ) {
+        return ResponseEntity.ok(doctorService.getRejectedAppointmentsDoctor(authentication, page, size));
+    }
+
     @PostMapping(value = "/appointments/{appointment-id}/prescription",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Long> postPrescription(

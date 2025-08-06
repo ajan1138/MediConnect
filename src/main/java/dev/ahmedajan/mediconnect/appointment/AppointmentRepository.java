@@ -31,7 +31,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     List<Appointment> findAllByDoctorId(long id);
 
     @Query(value = """
-
             SELECT a FROM Appointment a
     JOIN a.timeSlot r
     WHERE a.doctor.id = :doctorId
@@ -53,6 +52,13 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     AND a.status = 'APPROVED'
     """)
     Page<Appointment> findUpcomingAppointments(@Param("doctorId") Long doctorId, Pageable pageable);
-    }
+
+    @Query("""
+            SELECT a FROM Appointment a
+            WHERE a.doctor.id = :doctorId
+            AND a.status = 'REJECTED'
+                        """)
+    Page<Appointment> findRejectedAppointments(@Param("doctorId") Long doctorId, Pageable pageable);
+}
 
 

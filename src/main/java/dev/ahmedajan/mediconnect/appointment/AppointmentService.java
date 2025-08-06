@@ -298,4 +298,22 @@ public class AppointmentService {
                 appointments.isLast()
         );
     }
+
+    public PageResponse<AppointmentResponseDTO> getRejectedAppointmentsDoctor(Long doctorId, Pageable pageable) {
+        Page<Appointment> appointments = appointmentRepository.findRejectedAppointments(doctorId, pageable);
+
+        List<AppointmentResponseDTO> appointmentsDTO = appointments.stream()
+                .map(appointmentMapper::toAppointmentResponseDTO)
+                .toList();
+
+        return new PageResponse<>(
+                appointmentsDTO,
+                appointments.getNumber(),
+                appointments.getSize(),
+                (int) appointments.getTotalElements(),
+                appointments.getTotalPages(),
+                appointments.isFirst(),
+                appointments.isLast()
+        );
+    }
 }
