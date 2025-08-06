@@ -92,6 +92,15 @@ public class DoctorController {
         return ResponseEntity.ok(doctorService.postNotesAndDiagnosis(authentication, request, appointmentId));
     }
 
+    @GetMapping("/appointments/upcoming")
+    public ResponseEntity<PageResponse<AppointmentResponseDTO>> getUpcomingAppointmentsDoctor(
+            Authentication authentication,
+            @RequestParam(defaultValue = "1",required = false, name = "page") int page,
+            @RequestParam(defaultValue = "10",required = false, name = "size") int size
+    ) {
+        return ResponseEntity.ok(doctorService.getUpcomingAppointmentsDoctor(authentication, page, size));
+    }
+
     @PostMapping(value = "/appointments/{appointment-id}/prescription",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Long> postPrescription(

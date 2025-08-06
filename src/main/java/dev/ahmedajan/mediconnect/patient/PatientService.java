@@ -90,7 +90,6 @@ public class PatientService {
 
     public PageResponse<DoctorResponseDTO> searchDoctors(DoctorSearchCriteria criteria, int page, int size) {
             return doctorService.searchDoctors(criteria, page, size);
-
     }
 
     @Transactional

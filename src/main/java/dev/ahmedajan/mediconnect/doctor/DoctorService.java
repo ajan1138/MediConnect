@@ -47,7 +47,7 @@ public class DoctorService {
     private final PrescriptionService prescriptionService;
 
     public PageResponse<DoctorResponseDTO> findAllDoctors(int page, int size){
-        PageRequest pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+        PageRequest pageable = PageRequest.of(page - 1, size, Sort.by("createdDate").descending());
         Page<DoctorProfile> doctors = doctorRepository.findAllDisplayableDoctors(pageable);
 
         List<DoctorResponseDTO> doctorResponse = doctors.stream()
@@ -118,7 +118,7 @@ public class DoctorService {
             (Authentication authentication, int page, int size) {
 
         DoctorProfile doctor = getDoctorByUser(authentication);
-        PageRequest pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+        PageRequest pageable = PageRequest.of(page - 1, size, Sort.by("createdDate").descending());
         Page<Appointment> appointments = appointmentRepository.getAppointmentByDoctor(pageable, doctor);
 
         List<AppointmentResponseDTO> appointmentsResponse = appointments.stream()
@@ -229,5 +229,14 @@ public class DoctorService {
             log.error("Error searching doctors with criteria: {}", criteria, e);
             throw new BusinessRuleException("Failed to search doctors");
         }
+    }
+
+    public PageResponse<AppointmentResponseDTO> getUpcomingAppointmentsDoctor(
+            Authentication authentication,
+            int page,
+            int size) {
+        DoctorProfile doc = getDoctorByUser(authentication);
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdDate").descending());
+        return appointmentService.getUpcomingAppointmentsDoctor(doc.getId(), pageable);
     }
 }

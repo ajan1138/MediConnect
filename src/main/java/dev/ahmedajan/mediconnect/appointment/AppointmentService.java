@@ -21,6 +21,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -278,5 +279,23 @@ public class AppointmentService {
         slotService.deleteReservedSlot(appointment.getTimeSlot());
 
         return appointmentMapper.toAppointmentResponseDTO(appointment);
+    }
+
+    public PageResponse<AppointmentResponseDTO> getUpcomingAppointmentsDoctor(long doctorId, Pageable pageable) {
+        Page<Appointment> appointments = appointmentRepository.findUpcomingAppointments(doctorId, pageable);
+
+        List<AppointmentResponseDTO> appointmentsDTO = appointments.stream()
+                .map(appointmentMapper::toAppointmentResponseDTO)
+                .toList();
+
+        return new PageResponse<>(
+                appointmentsDTO,
+                appointments.getNumber(),
+                appointments.getSize(),
+                (int) appointments.getTotalElements(),
+                appointments.getTotalPages(),
+                appointments.isFirst(),
+                appointments.isLast()
+        );
     }
 }

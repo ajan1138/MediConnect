@@ -49,8 +49,10 @@ public class DoctorProfile {
     @Column(name = "last_modified_by")
     private String lastModifiedBy;
 
+    @Column(name = "specialization", columnDefinition = "citext")
     private String specialization;
     private String bio;
+    @Column(name = "location", columnDefinition = "citext")
     private String location;
     private boolean isApproved;
     private double rate;
