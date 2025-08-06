@@ -56,9 +56,11 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     @Query("""
             SELECT a FROM Appointment a
             WHERE a.doctor.id = :doctorId
-            AND a.status = 'REJECTED'
+            AND a.status = :status
                         """)
-    Page<Appointment> findRejectedAppointments(@Param("doctorId") Long doctorId, Pageable pageable);
+    Page<Appointment> findAppointments(@Param("doctorId") Long doctorId,
+                                               @Param("status") AppointmentStatus status,
+                                               Pageable pageable);
 }
 
 

@@ -1,6 +1,7 @@
 package dev.ahmedajan.mediconnect.doctor;
 
 import dev.ahmedajan.mediconnect.admin.PageResponse;
+import dev.ahmedajan.mediconnect.appointment.AppointmentStatus;
 import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentResponseDTO;
 import dev.ahmedajan.mediconnect.appointment.DTO.NotesDiagnosisRequest;
 import dev.ahmedajan.mediconnect.doctor.dto.DoctorRequestDTO;
@@ -105,9 +106,10 @@ public class DoctorController {
     public ResponseEntity<PageResponse<AppointmentResponseDTO>> getRejectedAppointmentsDoctor(
             Authentication authentication,
             @RequestParam(defaultValue = "1",required = false, name = "page") int page,
-            @RequestParam(defaultValue = "10",required = false, name = "size") int size
+            @RequestParam(defaultValue = "10",required = false, name = "size") int size,
+            @RequestParam(required = false, name = "status") AppointmentStatus status
     ) {
-        return ResponseEntity.ok(doctorService.getRejectedAppointmentsDoctor(authentication, page, size));
+        return ResponseEntity.ok(doctorService.findAppointments(authentication, page, size, status));
     }
 
     @PostMapping(value = "/appointments/{appointment-id}/prescription",

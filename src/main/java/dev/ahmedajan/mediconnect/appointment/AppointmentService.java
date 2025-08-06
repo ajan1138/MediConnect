@@ -299,8 +299,8 @@ public class AppointmentService {
         );
     }
 
-    public PageResponse<AppointmentResponseDTO> getRejectedAppointmentsDoctor(Long doctorId, Pageable pageable) {
-        Page<Appointment> appointments = appointmentRepository.findRejectedAppointments(doctorId, pageable);
+    public PageResponse<AppointmentResponseDTO> findAppointments(Long doctorId, Pageable pageable, AppointmentStatus status) {
+        Page<Appointment> appointments = appointmentRepository.findAppointments(doctorId, status,  pageable);
 
         List<AppointmentResponseDTO> appointmentsDTO = appointments.stream()
                 .map(appointmentMapper::toAppointmentResponseDTO)

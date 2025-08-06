@@ -1,10 +1,7 @@
 package dev.ahmedajan.mediconnect.doctor;
 
 import dev.ahmedajan.mediconnect.admin.PageResponse;
-import dev.ahmedajan.mediconnect.appointment.Appointment;
-import dev.ahmedajan.mediconnect.appointment.AppointmentMapper;
-import dev.ahmedajan.mediconnect.appointment.AppointmentRepository;
-import dev.ahmedajan.mediconnect.appointment.AppointmentService;
+import dev.ahmedajan.mediconnect.appointment.*;
 import dev.ahmedajan.mediconnect.appointment.DTO.AppointmentResponseDTO;
 import dev.ahmedajan.mediconnect.appointment.DTO.NotesDiagnosisRequest;
 import dev.ahmedajan.mediconnect.availabilitySlot.ReservedSlotService;
@@ -240,13 +237,14 @@ public class DoctorService {
         return appointmentService.getUpcomingAppointmentsDoctor(doc.getId(), pageable);
     }
 
-    public PageResponse<AppointmentResponseDTO> getRejectedAppointmentsDoctor(
+    public PageResponse<AppointmentResponseDTO> findAppointments(
             Authentication authentication,
             int page,
-            int size) {
-
+            int size,
+            AppointmentStatus status
+    ) {
         DoctorProfile doc = getDoctorByUser(authentication);
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdDate").descending());
-        return appointmentService.getRejectedAppointmentsDoctor(doc.getId(), pageable);
+        return appointmentService.findAppointments(doc.getId(), pageable, status);
     }
 }
