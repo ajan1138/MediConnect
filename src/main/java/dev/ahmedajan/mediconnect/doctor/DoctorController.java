@@ -102,7 +102,7 @@ public class DoctorController {
         return ResponseEntity.ok(doctorService.getUpcomingAppointmentsDoctor(authentication, page, size));
     }
 
-    @GetMapping("/appointments/rejected")
+    @GetMapping("/appointments/find")
     public ResponseEntity<PageResponse<AppointmentResponseDTO>> getRejectedAppointmentsDoctor(
             Authentication authentication,
             @RequestParam(defaultValue = "1",required = false, name = "page") int page,
